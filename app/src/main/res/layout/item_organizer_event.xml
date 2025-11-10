@@ -1,62 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardEvent"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    card_view:cardCornerRadius="8dp"
-    card_view:cardElevation="4dp">
+    android:layout_marginBottom="12dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardElevation="2dp"
+    app:cardCornerRadius="12dp"
+    app:cardBackgroundColor="#FFFFFF">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="12dp">
+        android:orientation="horizontal">
 
-        <!-- Thumbnail image -->
+        <!-- Event Poster -->
         <ImageView
-            android:id="@+id/img_event_thumbnail"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:id="@+id/ivEventPoster"
+            android:layout_width="100dp"
+            android:layout_height="120dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_event_placeholder"
-            android:contentDescription="@string/event_thumbnail" />
+            android:background="#F5F5F5"
+            android:contentDescription="Event poster"/>
 
-        <!-- Text section -->
+        <!-- Event Info -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:orientation="vertical"
-            android:paddingStart="12dp">
+            android:padding="12dp">
 
+            <!-- Event Name -->
             <TextView
-                android:id="@+id/txt_event_name"
+                android:id="@+id/tvEventName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Event Name"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="@android:color/black" />
+                android:textColor="#000000"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-medium"
+                android:maxLines="2"
+                android:ellipsize="end"/>
 
+            <!-- Event Date -->
             <TextView
-                android:id="@+id/txt_event_details"
+                android:id="@+id/tvEventDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Event description goes here"
+                android:text="Date"
+                android:textColor="#5E5E5E"
                 android:textSize="14sp"
-                android:textColor="@android:color/darker_gray"
-                android:ellipsize="end"
-                android:maxLines="2" />
+                android:layout_marginTop="4dp"/>
 
-            <TextView
-                android:id="@+id/txt_attendees_count"
-                android:layout_width="wrap_content"
+            <!-- Stats -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Entrants: 0"
-                android:textSize="12sp"
-                android:textColor="@android:color/holo_blue_dark"
-                android:paddingTop="4dp" />
+                android:orientation="vertical"
+                android:layout_marginTop="12dp">
+
+                <TextView
+                    android:id="@+id/tvWaitingCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 waiting"
+                    android:textColor="#FFC107"
+                    android:textSize="12sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/tvSelectedCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 selected"
+                    android:textColor="#2196F3"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="2dp"/>
+
+                <TextView
+                    android:id="@+id/tvAttendingCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 attending"
+                    android:textColor="#4CAF50"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="2dp"/>
+
+            </LinearLayout>
+
         </LinearLayout>
+
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+
+</com.google.android.material.card.MaterialCardView>

@@ -1,27 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardEvent"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:layout_marginTop="8dp"
-    android:layout_marginBottom="8dp"
+    android:layout_marginBottom="12dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardElevation="2dp"
     app:cardCornerRadius="12dp"
-    app:cardElevation="4dp">
+    app:cardBackgroundColor="#FFFFFF">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp">
+        android:orientation="horizontal">
+
+        <!-- Event Poster -->
+        <ImageView
+            android:id="@+id/ivEventPoster"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:scaleType="centerCrop"
+            android:background="#F5F5F5"
+            android:contentDescription="Event poster"/>
 
         <!-- Event Info -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="12dp">
 
             <!-- Event Name -->
             <TextView
@@ -29,58 +39,60 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Event Name"
+                android:textColor="#000000"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/black" />
-
-            <!-- Event Description -->
-            <TextView
-                android:id="@+id/tvEventDescription"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Event description goes here"
-                android:textSize="14sp"
-                android:textColor="@android:color/darker_gray"
+                android:fontFamily="sans-serif-medium"
                 android:maxLines="2"
-                android:ellipsize="end"
-                android:layout_marginTop="4dp" />
+                android:ellipsize="end"/>
 
-            <!-- Event Status -->
+            <!-- Organizer -->
             <TextView
-                android:id="@+id/tvEventStatus"
+                android:id="@+id/tvOrganizer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Active"
-                android:textSize="12sp"
-                android:textColor="@android:color/black"
-                android:layout_marginTop="8dp"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp"
-                android:background="@android:color/darker_gray" />
+                android:text="By Organizer"
+                android:textColor="#5E5E5E"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"/>
+
+            <!-- Event Date -->
+            <TextView
+                android:id="@+id/tvEventDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Date"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:layout_marginTop="8dp"/>
+
+            <!-- Stats Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    android:id="@+id/tvCapacity"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="50 spots"
+                    android:textColor="#5E5E5E"
+                    android:textSize="12sp"/>
+
+                <TextView
+                    android:id="@+id/tvWaitingListCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="10 waiting"
+                    android:textColor="#5E5E5E"
+                    android:textSize="12sp"/>
+
+            </LinearLayout>
 
         </LinearLayout>
 
-        <!-- Action Button (Delete for admin) -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnEventAction"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Delete"
-            android:textSize="12sp"
-            android:textColor="@android:color/holo_red_dark"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="8dp" />
-
-        <Button
-            android:id="@+id/btnJoinLeave"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Join waiting list" />
-
-
     </LinearLayout>
 
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

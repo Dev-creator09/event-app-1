@@ -3,6 +3,7 @@ package com.example.event_app.models;
 import com.google.firebase.firestore.ServerTimestamp;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Event Model
@@ -15,6 +16,7 @@ public class Event {
 
     // Basic event information
     private boolean geolocationEnabled;
+    private Map<String, Map<String, Double>> entrantLocations;
     private String eventId;          // optional: if you also store ID inside the document
     private String name;
     private String description;
@@ -28,6 +30,8 @@ public class Event {
     private Long capacity;
     private List<String> waitingList;
     private List<String> signedUpUsers;
+    private List<String> selectedList;  // Users selected by lottery
+    private List<String> declinedUsers;  // Users who declined invitation
     private String organizerName;
     private Date eventDate;
     private int entrantCount;
@@ -39,6 +43,7 @@ public class Event {
     private Date registrationStartDate;
     @ServerTimestamp
     private Date registrationEndDate;
+
 
     // Lottery statistics
     private int totalSelected;
@@ -74,6 +79,7 @@ public class Event {
     public Long getCapacity() { return capacity; }
     public List<String> getWaitingList() { return waitingList; }
     public List<String> getSignedUpUsers() { return signedUpUsers; }
+    public List<String> getSelectedList() { return selectedList; }
     public Date getDate() { return date; }
     public Date getRegistrationStartDate() { return registrationStartDate; }
     public Date getRegistrationEndDate() { return registrationEndDate; }
@@ -98,6 +104,7 @@ public class Event {
     public void setCapacity(Long capacity) { this.capacity = capacity; }
     public void setWaitingList(List<String> waitingList) { this.waitingList = waitingList; }
     public void setSignedUpUsers(List<String> signedUpUsers) { this.signedUpUsers = signedUpUsers; }
+    public void setSelectedList(List<String> selectedList) { this.selectedList = selectedList; }
     public void setDate(Date date) { this.date = date; }
     public void setRegistrationStartDate(Date registrationStartDate) { this.registrationStartDate = registrationStartDate; }
     public void setRegistrationEndDate(Date registrationEndDate) { this.registrationEndDate = registrationEndDate; }
@@ -108,6 +115,14 @@ public class Event {
     public void setEventDate(Date eventDate) { this.eventDate = eventDate; }
     public void setEntrantCount(int entrantCount) { this.entrantCount = entrantCount; }
     public void setGeolocationEnabled(boolean geolocationEnabled) { this.geolocationEnabled = geolocationEnabled; }
+
+    public List<String> getDeclinedUsers() { return declinedUsers; }
+    public void setDeclinedUsers(List<String> declinedUsers) { this.declinedUsers = declinedUsers; }
+
+    public Map<String, Map<String, Double>> getEntrantLocations() { return entrantLocations; }
+    public void setEntrantLocations(Map<String, Map<String, Double>> entrantLocations) {
+        this.entrantLocations = entrantLocations;
+    }
 
     // --- Logic Methods ---
     public double getCancellationRate() {

@@ -1,134 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:fillViewport="true">
+    android:background="#FFFFFF"
+    android:padding="24dp">
 
+    <!-- Content Container -->
     <LinearLayout
+        android:id="@+id/contentLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:orientation="vertical"
-        android:padding="24dp">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btnContinue"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <!-- Header -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Welcome to LuckySpot"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:textColor="@color/black"
-            android:layout_marginTop="32dp"
-            android:layout_marginBottom="8dp" />
+            android:text="Create your profile"
+            android:textColor="#000000"
+            android:textSize="32sp"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="8dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Create your profile"
+            android:text="Let's get started with some basic information"
+            android:textColor="#5E5E5E"
             android:textSize="16sp"
-            android:textColor="@color/gray_dark"
-            android:layout_marginBottom="32dp" />
+            android:layout_marginBottom="40dp"/>
 
         <!-- Name Input -->
         <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Full Name"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="16dp"
+            android:hint="Full name"
+            app:boxStrokeColor="#000000"
+            app:hintTextColor="#5E5E5E">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
-                android:textColor="@color/black" />
+                android:textColor="#000000"
+                android:textSize="16sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Email Input -->
         <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             android:hint="Email"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_marginBottom="16dp">
+            app:boxStrokeColor="#000000"
+            app:hintTextColor="#5E5E5E">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
-                android:textColor="@color/black" />
+                android:textColor="#000000"
+                android:textSize="16sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Phone Input (Optional) -->
         <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Phone Number (Optional)"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_marginBottom="24dp">
+            android:hint="Phone number (optional)"
+            app:boxStrokeColor="#000000"
+            app:hintTextColor="#5E5E5E">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextPhone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="phone"
-                android:textColor="@color/black" />
+                android:textColor="#000000"
+                android:textSize="16sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Role Selection -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="What would you like to do?"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/black"
-            android:layout_marginBottom="8dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Select one or both"
-            android:textSize="14sp"
-            android:textColor="@color/gray_dark"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Entrant Checkbox -->
-        <com.google.android.material.checkbox.MaterialCheckBox
-            android:id="@+id/checkboxEntrant"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Join events as a participant"
-            android:textSize="16sp"
-            android:textColor="@color/black"
-            android:checked="true"
-            android:layout_marginBottom="12dp" />
-
-        <!-- Organizer Checkbox -->
-        <com.google.android.material.checkbox.MaterialCheckBox
-            android:id="@+id/checkboxOrganizer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Create and organize events"
-            android:textSize="16sp"
-            android:textColor="@color/black"
-            android:layout_marginBottom="32dp" />
-
-        <!-- Continue Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnContinue"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:text="Continue"
-            android:textColor="@color/white"
-            android:backgroundTint="@color/black"
-            style="@style/Widget.MaterialComponents.Button"
-            android:layout_marginTop="16dp"
-            app:cornerRadius="8dp" />
-
     </LinearLayout>
-</ScrollView>
+
+    <!-- Continue Button (Bottom) -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnContinue"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Continue"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textAllCaps="false"
+        android:fontFamily="sans-serif-medium"
+        app:backgroundTint="#000000"
+        app:cornerRadius="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="16dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFFFFF"
+    android:padding="24dp">
+
+    <!-- Header -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Events"
+        android:textColor="#000000"
+        android:textSize="32sp"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Browse and join upcoming events"
+        android:textColor="#5E5E5E"
+        android:textSize="16sp"
+        android:layout_marginBottom="32dp"/>
+
+    <!-- Browse All Events Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnBrowseAllEvents"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Browse All Events"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textAllCaps="false"
+        android:fontFamily="sans-serif-medium"
+        app:backgroundTint="#000000"
+        app:cornerRadius="8dp"/>
+
+</LinearLayout>

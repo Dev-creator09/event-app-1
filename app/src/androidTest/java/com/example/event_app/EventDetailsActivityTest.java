@@ -21,6 +21,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import com.example.event_app.utils.Navigator;
+
 /**
  * Instrumented tests for EventDetailsActivity
  * Tests UI display, button clicks, and navigation
