@@ -1,167 +1,434 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
-    <!-- Scrollable Content -->
-    <ScrollView
+    <!-- Fixed Header (Always Visible) -->
+    <LinearLayout
+        android:id="@+id/headerSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="20dp"
+        android:background="#FFFFFF"
+        android:elevation="4dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Home"
+            android:textColor="#000000"
+            android:textSize="32sp"
+            android:fontFamily="sans-serif-medium"/>
+
+        <!-- Search Icon -->
+        <ImageButton
+            android:id="@+id/btnSearch"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_search"
+            android:contentDescription="Search"
+            android:layout_marginEnd="8dp"
+            app:tint="#000000"/>
+
+        <!-- Notifications Icon -->
+        <ImageButton
+            android:id="@+id/btnNotifications"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_popup_reminder"
+            android:contentDescription="Notifications"
+            app:tint="#000000"/>
+
+    </LinearLayout>
+
+    <!-- Scrollable Content (Below Header) -->
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:layout_marginTop="88dp"
+        android:clipToPadding="false">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="24dp">
+            android:orientation="vertical">
 
-            <!-- Header -->
-            <TextView
-                android:id="@+id/textHeaderHome"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Home"
-                android:textColor="#000000"
-                android:textSize="32sp"
-                android:fontFamily="sans-serif-medium"
-                android:layout_marginBottom="24dp" />
-
-            <!-- Scan QR Card -->
+            <!-- Scan QR Code Card (Prominent) -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardScanQR"
+                android:id="@+id/cardScanQr"
                 android:layout_width="match_parent"
                 android:layout_height="140dp"
-                android:layout_marginBottom="16dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardElevation="4dp"
-                app:cardCornerRadius="12dp"
-                app:cardUseCompatPadding="true"
-                app:cardBackgroundColor="#000000">
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="24dp"
+                app:cardBackgroundColor="#000000"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:padding="20dp"
-                    android:gravity="bottom">
+                    android:padding="24dp"
+                    android:gravity="center_vertical">
 
                     <TextView
-                        android:id="@+id/textScanQRTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Scan QR Code"
+                        android:text="📱 Scan QR Code"
                         android:textColor="#FFFFFF"
                         android:textSize="24sp"
-                        android:fontFamily="sans-serif-medium" />
-
-                    <TextView
-                        android:id="@+id/textScanQRSubtitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Join event instantly"
-                        android:textColor="#B0B0B0"
-                        android:textSize="14sp"
-                        android:layout_marginTop="4dp" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Browse Events Card -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardBrowseEvents"
-                android:layout_width="match_parent"
-                android:layout_height="140dp"
-                android:layout_marginBottom="16dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardElevation="4dp"
-                app:cardCornerRadius="12dp"
-                app:cardUseCompatPadding="true"
-                app:cardBackgroundColor="#F5F5F5">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:padding="20dp"
-                    android:gravity="bottom">
-
-                    <TextView
-                        android:id="@+id/textBrowseEventsTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Browse Events"
-                        android:textColor="#000000"
-                        android:textSize="24sp"
-                        android:fontFamily="sans-serif-medium" />
-
-                    <TextView
-                        android:id="@+id/textBrowseEventsSubtitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Find events to join"
-                        android:textColor="#5E5E5E"
-                        android:textSize="14sp"
-                        android:layout_marginTop="4dp" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- My Events Card -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardMyEvents"
-                android:layout_width="match_parent"
-                android:layout_height="140dp"
-                android:layout_marginBottom="16dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardElevation="2dp"
-                app:cardCornerRadius="12dp"
-                app:cardBackgroundColor="#F5F5F5">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:padding="20dp"
-                    android:gravity="bottom">
-
-                    <TextView
-                        android:text="My Events"
-                        android:textColor="#000000"
-                        android:textSize="24sp"
                         android:fontFamily="sans-serif-medium"
-                        android:layout_height="wrap_content"
-                        android:layout_width="wrap_content" />
+                        android:layout_marginBottom="8dp"/>
 
                     <TextView
-                        android:text="View your event history"
-                        android:textColor="#5E5E5E"
-                        android:textSize="14sp"
-                        android:layout_marginTop="4dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_width="wrap_content" />
+                        android:text="Join events instantly with QR codes"
+                        android:textColor="#B0B0B0"
+                        android:textSize="14sp"/>
+
                 </LinearLayout>
+
             </com.google.android.material.card.MaterialCardView>
+
+            <!-- Happening Soon Section -->
+            <LinearLayout
+                android:id="@+id/sectionHappeningSoon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="24dp">
+
+                <!-- Section Header -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:paddingBottom="12dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Happening Soon"
+                        android:textColor="#000000"
+                        android:textSize="20sp"
+                        android:fontFamily="sans-serif-medium"/>
+
+                    <TextView
+                        android:id="@+id/btnSeeAllHappeningSoon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="See All →"
+                        android:textColor="#666666"
+                        android:textSize="14sp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground"
+                        android:padding="8dp"/>
+
+                </LinearLayout>
+
+                <!-- Horizontal RecyclerView -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvHappeningSoon"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"/>
+
+                <!-- Empty State -->
+                <LinearLayout
+                    android:id="@+id/emptyHappeningSoon"
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🎪"
+                        android:textSize="48sp"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="No events happening soon"
+                        android:textColor="#999999"
+                        android:textSize="14sp"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Categories Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Browse by Category"
+                    android:textColor="#000000"
+                    android:textSize="20sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:paddingBottom="12dp"/>
+
+                <!-- Category Chips -->
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp">
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipGroupCategories"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:singleSelection="false"
+                        app:chipSpacing="8dp">
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipMusic"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🎵 Music"
+                            style="@style/Widget.MaterialComponents.Chip.Choice"
+                            app:chipBackgroundColor="@color/white"
+                            app:chipStrokeColor="#000000"
+                            app:chipStrokeWidth="1dp"/>
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipSports"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="⚽ Sports"
+                            style="@style/Widget.MaterialComponents.Chip.Choice"
+                            app:chipBackgroundColor="@color/white"
+                            app:chipStrokeColor="#000000"
+                            app:chipStrokeWidth="1dp"/>
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipArt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🎨 Art"
+                            style="@style/Widget.MaterialComponents.Chip.Choice"
+                            app:chipBackgroundColor="@color/white"
+                            app:chipStrokeColor="#000000"
+                            app:chipStrokeWidth="1dp"/>
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipFood"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🍔 Food"
+                            style="@style/Widget.MaterialComponents.Chip.Choice"
+                            app:chipBackgroundColor="@color/white"
+                            app:chipStrokeColor="#000000"
+                            app:chipStrokeWidth="1dp"/>
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipTech"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="💻 Tech"
+                            style="@style/Widget.MaterialComponents.Chip.Choice"
+                            app:chipBackgroundColor="@color/white"
+                            app:chipStrokeColor="#000000"
+                            app:chipStrokeWidth="1dp"/>
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipWorkshops"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="📚 Workshops"
+                            style="@style/Widget.MaterialComponents.Chip.Choice"
+                            app:chipBackgroundColor="@color/white"
+                            app:chipStrokeColor="#000000"
+                            app:chipStrokeWidth="1dp"/>
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipOther"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="✨ Other"
+                            style="@style/Widget.MaterialComponents.Chip.Choice"
+                            app:chipBackgroundColor="@color/white"
+                            app:chipStrokeColor="#000000"
+                            app:chipStrokeWidth="1dp"/>
+
+                    </com.google.android.material.chip.ChipGroup>
+
+                </HorizontalScrollView>
+
+            </LinearLayout>
+
+            <!-- Popular This Week Section -->
+            <LinearLayout
+                android:id="@+id/sectionPopular"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="24dp">
+
+                <!-- Section Header -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:paddingBottom="12dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Popular This Week"
+                        android:textColor="#000000"
+                        android:textSize="20sp"
+                        android:fontFamily="sans-serif-medium"/>
+
+                    <TextView
+                        android:id="@+id/btnSeeAllPopular"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="See All →"
+                        android:textColor="#666666"
+                        android:textSize="14sp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground"
+                        android:padding="8dp"/>
+
+                </LinearLayout>
+
+                <!-- Horizontal RecyclerView -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvPopular"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"/>
+
+                <!-- Empty State -->
+                <LinearLayout
+                    android:id="@+id/emptyPopular"
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🔥"
+                        android:textSize="48sp"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="No popular events yet"
+                        android:textColor="#999999"
+                        android:textSize="14sp"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Quick Actions Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:paddingBottom="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Quick Actions"
+                    android:textColor="#000000"
+                    android:textSize="20sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:paddingBottom="12dp"/>
+
+                <!-- My Events Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnMyEvents"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="📋 My Events"
+                    android:textColor="#000000"
+                    android:textSize="16sp"
+                    android:textAllCaps="false"
+                    android:fontFamily="sans-serif-medium"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    app:strokeColor="#000000"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="12dp"
+                    android:layout_marginBottom="12dp"
+                    app:icon="@android:drawable/ic_menu_agenda"
+                    app:iconTint="#000000"
+                    app:iconGravity="start"/>
+
+                <!-- Create Event Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCreateEvent"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="➕ Create Event"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textAllCaps="false"
+                    android:fontFamily="sans-serif-medium"
+                    app:backgroundTint="#000000"
+                    app:cornerRadius="12dp"
+                    app:icon="@android:drawable/ic_input_add"
+                    app:iconTint="#FFFFFF"
+                    app:iconGravity="start"/>
+
+            </LinearLayout>
 
         </LinearLayout>
-    </ScrollView>
 
-    <!-- Loading Overlay -->
-    <FrameLayout
-        android:id="@+id/loadingView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#80000000"
-        android:visibility="gone"
-        android:clickable="true"
-        android:focusable="true">
+    </androidx.core.widget.NestedScrollView>
 
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"/>
-    </FrameLayout>
+    <!-- Loading Indicator -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"/>
 
-</FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
