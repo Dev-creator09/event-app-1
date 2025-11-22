@@ -109,12 +109,8 @@ public class SettingsActivity extends AppCompatActivity {
         editPhone.setText(currentUser.getPhoneNumber());
         switchNotifications.setChecked(currentUser.isNotificationsEnabled());
 
-        // Show/hide "Become Organizer" button
-        if (currentUser.isOrganizer()) {
-            organizerSection.setVisibility(View.GONE);
-        } else {
-            organizerSection.setVisibility(View.VISIBLE);
-        }
+        // Hide "Become Organizer" section - feature removed
+        organizerSection.setVisibility(View.GONE);
     }
 
     /**
@@ -212,7 +208,7 @@ public class SettingsActivity extends AppCompatActivity {
         db.collection("users").document(userId)
                 .set(currentUser)
                 .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "You're now an organizer! 🎉", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "You're now an organizer! ðŸŽ‰", Toast.LENGTH_LONG).show();
                     organizerSection.setVisibility(View.GONE);
 
                     // Restart activity to show organizer features
