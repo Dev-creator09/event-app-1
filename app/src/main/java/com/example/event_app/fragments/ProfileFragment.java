@@ -228,14 +228,8 @@ public class ProfileFragment extends Fragment {
         // Email
         tvProfileEmail.setText(currentUser.getEmail() != null ? currentUser.getEmail() : "");
 
-        // Role
-        String roleText;
-        if (currentUser.isOrganizer()) {
-            roleText = "Entrant & Organizer";
-        } else {
-            roleText = "Entrant";
-        }
-        tvProfileRole.setText(roleText);
+        // Hide role display - not needed
+        tvProfileRole.setVisibility(View.GONE);
     }
 
     /**
