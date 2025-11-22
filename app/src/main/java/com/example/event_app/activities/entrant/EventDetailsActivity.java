@@ -1,6 +1,7 @@
 package com.example.event_app.activities.entrant;
 
-
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.example.event_app.R;
 import com.example.event_app.models.Event;
 import com.example.event_app.utils.Navigator;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -39,6 +41,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private TextView tvEventName, tvDescription, tvOrganizer, tvLocation;
     private TextView tvEventDate, tvCapacity, tvWaitingListCount;
     private MaterialButton btnJoinWaitingList, btnLeaveWaitingList;
+    private MaterialCardView cardLocation;
     private View loadingView, contentView, errorView;
 
     // Firebase
@@ -54,7 +57,6 @@ public class EventDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details);
-
 
         // Get event ID from intent
         eventId = getIntent().getStringExtra(Navigator.EXTRA_EVENT_ID);
@@ -87,6 +89,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         tvWaitingListCount = findViewById(R.id.tvWaitingListCount);
         btnJoinWaitingList = findViewById(R.id.btnJoinWaitingList);
         btnLeaveWaitingList = findViewById(R.id.btnLeaveWaitingList);
+        cardLocation = findViewById(R.id.cardLocation);
         loadingView = findViewById(R.id.loadingView);
         contentView = findViewById(R.id.contentView);
         errorView = findViewById(R.id.errorView);
@@ -96,6 +99,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         btnLeaveWaitingList.setOnClickListener(v -> leaveWaitingList());
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
         findViewById(R.id.btnRetry).setOnClickListener(v -> loadEventDetails());
+
+        // Location card click listener
+        cardLocation.setOnClickListener(v -> openLocationInMaps());
     }
 
     private void loadEventDetails() {
@@ -122,14 +128,12 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     private void displayEventDetails() {
-        showContent();
-
         // Event name
         tvEventName.setText(event.getName());
 
         // Description
         tvDescription.setText(event.getDescription() != null ?
-                event.getDescription() : "No description provided");
+                event.getDescription() : "No description available");
 
         // Organizer
         tvOrganizer.setText(event.getOrganizerName() != null ?
@@ -137,52 +141,91 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         // Location
         if (event.getLocation() != null && !event.getLocation().isEmpty()) {
-            tvLocation.setVisibility(View.VISIBLE);
             tvLocation.setText(event.getLocation());
+            cardLocation.setVisibility(View.VISIBLE);
         } else {
-            tvLocation.setVisibility(View.GONE);
+            cardLocation.setVisibility(View.GONE);
         }
 
         // Event date
         if (event.getEventDate() != null) {
             SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy 'at' h:mm a", Locale.getDefault());
             tvEventDate.setText(sdf.format(event.getEventDate()));
-        } else {
-            tvEventDate.setText("Date TBA");
+        } else if (event.getDate() != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy 'at' h:mm a", Locale.getDefault());
+            tvEventDate.setText(sdf.format(event.getDate()));
         }
 
         // Capacity
         if (event.getCapacity() != null) {
-            tvCapacity.setText(String.format(Locale.getDefault(),
-                    "Capacity: %d spots", event.getCapacity()));
+            tvCapacity.setText("Capacity: " + event.getCapacity() + " spots");
         } else {
             tvCapacity.setText("Capacity: Unlimited");
         }
 
-        // Waiting list count (US 01.05.04)
-        int waitingListSize = event.getWaitingList() != null ?
-                event.getWaitingList().size() : 0;
-        tvWaitingListCount.setText(String.format(Locale.getDefault(),
-                "%d people on waiting list", waitingListSize));
+        // Waiting list count
+        int waitingCount = event.getWaitingList() != null ? event.getWaitingList().size() : 0;
+        tvWaitingListCount.setText(waitingCount + (waitingCount == 1 ? " person" : " people") + " on waiting list");
 
-        // Load poster if available
+        // Poster
         if (event.getPosterUrl() != null && !event.getPosterUrl().isEmpty()) {
             Glide.with(this)
                     .load(event.getPosterUrl())
                     .centerCrop()
                     .into(ivPoster);
         }
+
+        showContent();
+    }
+
+    /**
+     * Open location in Google Maps
+     */
+    private void openLocationInMaps() {
+        if (event == null || event.getLocation() == null || event.getLocation().isEmpty()) {
+            Toast.makeText(this, "No location available", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            // Create a geo URI for Google Maps
+            String location = event.getLocation();
+            Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + Uri.encode(location));
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            mapIntent.setPackage("com.google.android.apps.maps");
+
+            // Check if Google Maps is installed
+            if (mapIntent.resolveActivity(getPackageManager()) != null) {
+                startActivity(mapIntent);
+            } else {
+                // Fallback to browser if Maps not installed
+                Uri browserUri = Uri.parse("https://www.google.com/maps/search/?api=1&query=" + Uri.encode(location));
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, browserUri);
+                startActivity(browserIntent);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error opening maps", e);
+            Toast.makeText(this, "Could not open maps", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void checkWaitingListStatus() {
-        String userId = mAuth.getCurrentUser().getUid();
+        if (mAuth.getCurrentUser() == null) {
+            isOnWaitingList = false;
+            updateButtonState();
+            return;
+        }
 
-        if (event.getWaitingList() != null && event.getWaitingList().contains(userId)) {
-            isOnWaitingList = true;
+        String userId = mAuth.getCurrentUser().getUid();
+        isOnWaitingList = event.getWaitingList() != null && event.getWaitingList().contains(userId);
+        updateButtonState();
+    }
+
+    private void updateButtonState() {
+        if (isOnWaitingList) {
             btnJoinWaitingList.setVisibility(View.GONE);
             btnLeaveWaitingList.setVisibility(View.VISIBLE);
         } else {
-            isOnWaitingList = false;
             btnJoinWaitingList.setVisibility(View.VISIBLE);
             btnLeaveWaitingList.setVisibility(View.GONE);
         }
@@ -192,19 +235,20 @@ public class EventDetailsActivity extends AppCompatActivity {
      * US 01.01.01: Join waiting list
      */
     private void joinWaitingList() {
-        String userId = mAuth.getCurrentUser().getUid();
+        if (mAuth.getCurrentUser() == null) {
+            Toast.makeText(this, "Please sign in to join", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
+        String userId = mAuth.getCurrentUser().getUid();
         btnJoinWaitingList.setEnabled(false);
 
         db.collection("events").document(eventId)
                 .update("waitingList", FieldValue.arrayUnion(userId))
                 .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "Joined waiting list");
                     Toast.makeText(this, "Joined waiting list!", Toast.LENGTH_SHORT).show();
-                    isOnWaitingList = true;
-                    btnJoinWaitingList.setVisibility(View.GONE);
-                    btnLeaveWaitingList.setVisibility(View.VISIBLE);
-                    btnLeaveWaitingList.setEnabled(true);
-                    loadEventDetails(); // Refresh count
+                    loadEventDetails();
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error joining waiting list", e);
@@ -217,19 +261,17 @@ public class EventDetailsActivity extends AppCompatActivity {
      * US 01.01.02: Leave waiting list
      */
     private void leaveWaitingList() {
-        String userId = mAuth.getCurrentUser().getUid();
+        if (mAuth.getCurrentUser() == null) return;
 
+        String userId = mAuth.getCurrentUser().getUid();
         btnLeaveWaitingList.setEnabled(false);
 
         db.collection("events").document(eventId)
                 .update("waitingList", FieldValue.arrayRemove(userId))
                 .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "Left waiting list");
                     Toast.makeText(this, "Left waiting list", Toast.LENGTH_SHORT).show();
-                    isOnWaitingList = false;
-                    btnLeaveWaitingList.setVisibility(View.GONE);
-                    btnJoinWaitingList.setVisibility(View.VISIBLE);
-                    btnJoinWaitingList.setEnabled(true);
-                    loadEventDetails(); // Refresh count
+                    loadEventDetails();
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error leaving waiting list", e);
@@ -254,6 +296,18 @@ public class EventDetailsActivity extends AppCompatActivity {
         loadingView.setVisibility(View.GONE);
         contentView.setVisibility(View.GONE);
         errorView.setVisibility(View.VISIBLE);
-        ((TextView) findViewById(R.id.tvError)).setText(message);
+
+        TextView tvError = findViewById(R.id.tvError);
+        if (tvError != null) {
+            tvError.setText(message);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (event != null) {
+            loadEventDetails();
+        }
     }
 }

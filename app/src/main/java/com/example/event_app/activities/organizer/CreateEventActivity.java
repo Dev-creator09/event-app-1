@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
@@ -22,6 +23,7 @@ import com.example.event_app.R;
 import com.example.event_app.activities.entrant.MainActivity;
 import com.example.event_app.models.Event;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -38,13 +40,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.UUID;
 
 /**
- * CreateEventActivity - Create new events
+ * CreateEventActivity - Create new events with geolocation toggle
  *
  * US 02.01.01: Create event and generate QR code
  * US 02.01.04: Set registration period
+ * US 02.02.03: Enable/disable geolocation
  * US 02.03.01: Limit number of entrants
  * US 02.04.01: Upload event poster
  */
@@ -55,9 +57,10 @@ public class CreateEventActivity extends AppCompatActivity {
     // UI Elements
     private TextInputEditText editEventName, editDescription, editLocation, editCapacity;
     private MaterialButton btnSelectPoster, btnSelectEventDate, btnSelectRegStart, btnSelectRegEnd;
-    private MaterialButton btnCreateEvent;
+    private MaterialButton btnCreateEvent, btnPreview;
+    private SwitchMaterial switchGeolocation;
     private ImageView ivPosterPreview;
-    private View loadingView;
+    private View loadingView, emptyPosterView;
 
     // Firebase
     private FirebaseAuth mAuth;
@@ -67,6 +70,7 @@ public class CreateEventActivity extends AppCompatActivity {
     // Data
     private Uri posterUri;
     private Date eventDate, regStartDate, regEndDate;
+    private boolean geolocationEnabled = false;
 
     // Image picker launcher
     private final ActivityResultLauncher<Intent> imagePickerLauncher =
@@ -104,10 +108,15 @@ public class CreateEventActivity extends AppCompatActivity {
         btnSelectRegStart = findViewById(R.id.btnSelectRegStart);
         btnSelectRegEnd = findViewById(R.id.btnSelectRegEnd);
         btnCreateEvent = findViewById(R.id.btnCreateEvent);
+        btnPreview = findViewById(R.id.btnPreview);
+
+        // Switch
+        switchGeolocation = findViewById(R.id.switchGeolocation);
 
         // Other views
         ivPosterPreview = findViewById(R.id.ivPosterPreview);
         loadingView = findViewById(R.id.loadingView);
+        emptyPosterView = findViewById(R.id.emptyPosterView);
 
         // Button listeners
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
@@ -116,6 +125,12 @@ public class CreateEventActivity extends AppCompatActivity {
         btnSelectRegStart.setOnClickListener(v -> selectRegistrationStart());
         btnSelectRegEnd.setOnClickListener(v -> selectRegistrationEnd());
         btnCreateEvent.setOnClickListener(v -> createEvent());
+        btnPreview.setOnClickListener(v -> showPreview());
+
+        // Geolocation switch listener
+        switchGeolocation.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            geolocationEnabled = isChecked;
+        });
     }
 
     /**
@@ -127,6 +142,7 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     private void displayPosterPreview() {
+        emptyPosterView.setVisibility(View.GONE);
         ivPosterPreview.setVisibility(View.VISIBLE);
         Glide.with(this)
                 .load(posterUri)
@@ -194,7 +210,49 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     /**
+     * Show preview of how the event will look
+     */
+    private void showPreview() {
+        String name = editEventName.getText().toString().trim();
+        String description = editDescription.getText().toString().trim();
+        String location = editLocation.getText().toString().trim();
+        String capacityStr = editCapacity.getText().toString().trim();
+
+        // Build preview message
+        StringBuilder preview = new StringBuilder();
+        preview.append("📋 Event Preview\n\n");
+
+        preview.append("Name: ").append(name.isEmpty() ? "Not set" : name).append("\n\n");
+        preview.append("Description: ").append(description.isEmpty() ? "Not set" : description).append("\n\n");
+        preview.append("Location: ").append(location.isEmpty() ? "Not set" : location).append("\n\n");
+
+        if (!capacityStr.isEmpty()) {
+            preview.append("Capacity: ").append(capacityStr).append(" spots\n\n");
+        } else {
+            preview.append("Capacity: Unlimited\n\n");
+        }
+
+        if (eventDate != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy 'at' h:mm a", Locale.getDefault());
+            preview.append("Date: ").append(sdf.format(eventDate)).append("\n\n");
+        } else {
+            preview.append("Date: Not set\n\n");
+        }
+
+        preview.append("Poster: ").append(posterUri != null ? "Selected ✓" : "Not selected").append("\n\n");
+        preview.append("Geolocation: ").append(geolocationEnabled ? "Enabled ✓" : "Disabled").append("\n");
+
+        new AlertDialog.Builder(this)
+                .setTitle("Event Preview")
+                .setMessage(preview.toString())
+                .setPositiveButton("Looks Good", null)
+                .setNegativeButton("Edit", null)
+                .show();
+    }
+
+    /**
      * US 02.01.01: Create event and generate QR code
+     * US 02.02.03: Enable/disable geolocation
      */
     private void createEvent() {
         // Get values
@@ -234,7 +292,12 @@ public class CreateEventActivity extends AppCompatActivity {
         event.setRegistrationEndDate(regEndDate);
         event.setWaitingList(new ArrayList<>());
         event.setSignedUpUsers(new ArrayList<>());
+        event.setSelectedList(new ArrayList<>());
+        event.setDeclinedUsers(new ArrayList<>());
         event.setStatus("active");
+
+        // US 02.02.03: Set geolocation requirement
+        event.setGeolocationEnabled(geolocationEnabled);
 
         // Get organizer name
         String userId = mAuth.getCurrentUser().getUid();

@@ -1,353 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="#FFFFFF">
 
-    <!-- Main Content -->
+    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="20dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="12dp">
 
-        <!-- Header with Title -->
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="20dp"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:paddingBottom="12dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Events"
-                android:textColor="#000000"
-                android:textSize="32sp"
-                android:fontFamily="sans-serif-medium"
-                android:layout_marginBottom="8dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Browse and join upcoming events"
-                android:textColor="#666666"
-                android:textSize="14sp"/>
-
-        </LinearLayout>
-
-        <!-- Search Bar -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
-            app:strokeColor="#E0E0E0"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="12dp"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@android:drawable/ic_menu_search"
-                    app:tint="#666666"
-                    android:contentDescription="Search"/>
-
-                <EditText
-                    android:id="@+id/searchBox"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="12dp"
-                    android:hint="Search events..."
-                    android:textSize="16sp"
-                    android:textColor="#000000"
-                    android:textColorHint="#999999"
-                    android:background="@null"
-                    android:inputType="text"
-                    android:maxLines="1"
-                    android:imeOptions="actionSearch"/>
-
-                <ImageButton
-                    android:id="@+id/btnClearSearch"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@android:drawable/ic_menu_close_clear_cancel"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:visibility="gone"
-                    app:tint="#666666"
-                    android:contentDescription="Clear search"/>
-
-            </LinearLayout>
-
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Filter Chips -->
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scrollbars="none"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:paddingBottom="16dp">
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipGroupFilters"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:singleSelection="true"
-                app:chipSpacing="8dp">
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipAll"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="All"
-                    android:checked="true"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    app:chipBackgroundColor="@android:color/transparent"
-                    app:chipStrokeColor="#000000"
-                    app:chipStrokeWidth="1dp"
-                    android:textColor="#000000"/>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipThisWeek"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="This Week"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    app:chipBackgroundColor="@android:color/transparent"
-                    app:chipStrokeColor="#000000"
-                    app:chipStrokeWidth="1dp"
-                    android:textColor="#000000"/>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipThisMonth"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="This Month"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    app:chipBackgroundColor="@android:color/transparent"
-                    app:chipStrokeColor="#000000"
-                    app:chipStrokeWidth="1dp"
-                    android:textColor="#000000"/>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipMusic"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🎵 Music"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    app:chipBackgroundColor="@android:color/transparent"
-                    app:chipStrokeColor="#000000"
-                    app:chipStrokeWidth="1dp"
-                    android:textColor="#000000"/>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipSports"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="⚽ Sports"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    app:chipBackgroundColor="@android:color/transparent"
-                    app:chipStrokeColor="#000000"
-                    app:chipStrokeWidth="1dp"
-                    android:textColor="#000000"/>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipArt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🎨 Art"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    app:chipBackgroundColor="@android:color/transparent"
-                    app:chipStrokeColor="#000000"
-                    app:chipStrokeWidth="1dp"
-                    android:textColor="#000000"/>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipFood"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🍔 Food"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    app:chipBackgroundColor="@android:color/transparent"
-                    app:chipStrokeColor="#000000"
-                    app:chipStrokeWidth="1dp"
-                    android:textColor="#000000"/>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipTech"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="💻 Tech"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    app:chipBackgroundColor="@android:color/transparent"
-                    app:chipStrokeColor="#000000"
-                    app:chipStrokeWidth="1dp"
-                    android:textColor="#000000"/>
-
-            </com.google.android.material.chip.ChipGroup>
-
-        </HorizontalScrollView>
-
-        <!-- Sort Dropdown -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:paddingBottom="12dp"
-            android:gravity="center_vertical">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:id="@+id/tvResultsCount"
-                android:text="0 events"
-                android:textColor="#666666"
-                android:textSize="14sp"/>
-
-            <TextView
-                android:id="@+id/btnSort"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sort: Date ▼"
-                android:textColor="#000000"
-                android:textSize="14sp"
-                android:padding="8dp"
-                android:background="?attr/selectableItemBackground"
-                android:clickable="true"
-                android:focusable="true"
-                android:drawablePadding="4dp"/>
-
-        </LinearLayout>
-
-        <!-- Events List -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
-
-            <!-- RecyclerView -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvEvents"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp"
-                android:paddingBottom="16dp"/>
-
-            <!-- Loading State -->
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:visibility="gone"/>
-
-            <!-- Empty State -->
-            <LinearLayout
-                android:id="@+id/emptyView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:padding="32dp"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🎪"
-                    android:textSize="64sp"
-                    android:layout_marginBottom="16dp"/>
-
-                <TextView
-                    android:id="@+id/tvEmptyMessage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="No events found"
-                    android:textColor="#000000"
-                    android:textSize="18sp"
-                    android:fontFamily="sans-serif-medium"
-                    android:layout_marginBottom="8dp"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Try adjusting your filters or search"
-                    android:textColor="#999999"
-                    android:textSize="14sp"
-                    android:textAlignment="center"/>
-
-            </LinearLayout>
-
-            <!-- Error State -->
-            <LinearLayout
-                android:id="@+id/errorView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:padding="32dp"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="⚠️"
-                    android:textSize="64sp"
-                    android:layout_marginBottom="16dp"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Something went wrong"
-                    android:textColor="#000000"
-                    android:textSize="18sp"
-                    android:fontFamily="sans-serif-medium"
-                    android:layout_marginBottom="8dp"/>
-
-                <TextView
-                    android:id="@+id/tvErrorMessage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Failed to load events"
-                    android:textColor="#999999"
-                    android:textSize="14sp"
-                    android:textAlignment="center"
-                    android:layout_marginBottom="16dp"/>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnRetry"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Retry"
-                    android:textColor="#FFFFFF"
-                    app:backgroundTint="#000000"
-                    app:cornerRadius="8dp"/>
-
-            </LinearLayout>
-
-        </FrameLayout>
+            android:text="Events"
+            android:textColor="#000000"
+            android:textSize="32sp"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginBottom="8dp"/>
 
     </LinearLayout>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <!-- TabLayout -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        app:tabSelectedTextColor="#000000"
+        app:tabTextColor="#5E5E5E"
+        app:tabIndicatorColor="#000000"
+        app:tabIndicatorHeight="3dp"
+        app:tabMode="fixed"
+        app:tabGravity="fill"/>
+
+    <!-- ViewPager2 -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+</LinearLayout>

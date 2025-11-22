@@ -46,6 +46,8 @@
         <activity android:name=".activities.organizer.OrganizerEventDetailsActivity" />
         <activity android:name=".activities.organizer.CreateEventActivity" />
         <activity android:name=".activities.organizer.OrganizerEventsActivity" />
+        <activity android:name=".activities.organizer.ViewEntrantsActivity" />
+
 
         <!-- Admin Activities -->
         <activity android:name=".admin.AdminHomeActivity" />

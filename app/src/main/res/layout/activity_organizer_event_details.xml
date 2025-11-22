@@ -1,74 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
-    <!-- Header -->
-    <LinearLayout
-        android:id="@+id/header"
+    <!-- App Bar Layout -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical"
-        app:layout_constraintTop_toTopOf="parent">
+        android:background="#FFFFFF"
+        app:elevation="0dp">
 
-        <ImageButton
-            android:id="@+id/btnBack"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_menu_close_clear_cancel"
-            android:contentDescription="Back"
-            app:tint="#000000"/>
+        <!-- Toolbar -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#FFFFFF"
+            app:navigationIcon="@android:drawable/ic_menu_close_clear_cancel"
+            app:title="Manage Event"
+            app:titleTextColor="#000000"/>
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="16dp"
-            android:text="Manage Event"
-            android:textColor="#000000"
-            android:textSize="24sp"
-            android:fontFamily="sans-serif-medium"/>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    </LinearLayout>
-
-    <!-- Loading View -->
-    <ProgressBar
-        android:id="@+id/loadingView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/header"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <!-- Content -->
-    <ScrollView
+    <!-- Main Content -->
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/header"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:padding="20dp">
 
-            <!-- Event Info -->
+            <!-- Event Name & Basic Info -->
             <TextView
                 android:id="@+id/tvEventName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Event Name"
                 android:textColor="#000000"
-                android:textSize="24sp"
+                android:textSize="28sp"
                 android:fontFamily="sans-serif-medium"
                 android:layout_marginBottom="8dp"/>
 
@@ -76,7 +53,7 @@
                 android:id="@+id/tvCapacity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Capacity: 50"
+                android:text="Capacity: 1"
                 android:textColor="#5E5E5E"
                 android:textSize="16sp"
                 android:layout_marginBottom="24dp"/>
@@ -88,138 +65,264 @@
                 android:orientation="horizontal"
                 android:layout_marginBottom="24dp">
 
-                <LinearLayout
+                <!-- Waiting List Card -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:background="#FFF9C4"
-                    android:padding="16dp"
                     android:layout_marginEnd="8dp"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/tvWaitingCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0 waiting"
-                        android:textColor="#000000"
-                        android:textSize="16sp"
-                        android:textStyle="bold"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:background="#E3F2FD"
-                    android:padding="16dp"
-                    android:layout_marginEnd="8dp"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/tvSelectedCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0 selected"
-                        android:textColor="#000000"
-                        android:textSize="16sp"
-                        android:textStyle="bold"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:background="#E8F5E9"
-                    android:padding="16dp"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/tvAttendingCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0 attending"
-                        android:textColor="#000000"
-                        android:textSize="16sp"
-                        android:textStyle="bold"/>
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <!-- Lottery Section -->
-            <LinearLayout
-                android:id="@+id/lotterySection"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginBottom="24dp"
-                android:visibility="visible">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnRunLottery"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:text="🎰 Run Lottery"
-                    android:textColor="#FFFFFF"
-                    android:textSize="16sp"
-                    android:textAllCaps="false"
-                    android:fontFamily="sans-serif-medium"
-                    app:backgroundTint="#000000"
-                    app:cornerRadius="8dp"
-                    android:layout_marginBottom="12dp"/>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnCancelSelected"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:text="Cancel Non-Responsive"
-                    android:textColor="#D32F2F"
-                    android:textSize="16sp"
-                    android:textAllCaps="false"
-                    android:fontFamily="sans-serif-medium"
-                    app:backgroundTint="#FFEBEE"
-                    app:strokeColor="#D32F2F"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="#E0E0E0"
                     app:strokeWidth="1dp"
-                    app:cornerRadius="8dp"
-                    android:visibility="gone"/>
+                    app:cardBackgroundColor="#FFF9C4">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/tvWaitingCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="#000000"
+                            android:textSize="24sp"
+                            android:fontFamily="sans-serif-medium"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Waiting"
+                            android:textColor="#5E5E5E"
+                            android:textSize="12sp"
+                            android:layout_marginTop="4dp"/>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Selected Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="#E0E0E0"
+                    app:strokeWidth="1dp"
+                    app:cardBackgroundColor="#E3F2FD">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/tvSelectedCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="#000000"
+                            android:textSize="24sp"
+                            android:fontFamily="sans-serif-medium"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Selected"
+                            android:textColor="#5E5E5E"
+                            android:textSize="12sp"
+                            android:layout_marginTop="4dp"/>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Attending Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="#E0E0E0"
+                    app:strokeWidth="1dp"
+                    app:cardBackgroundColor="#E8F5E9">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/tvAttendingCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="#000000"
+                            android:textSize="24sp"
+                            android:fontFamily="sans-serif-medium"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Attending"
+                            android:textColor="#5E5E5E"
+                            android:textSize="12sp"
+                            android:layout_marginTop="4dp"/>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
 
             </LinearLayout>
 
-            <!-- Organizer Tools Section -->
+            <!-- Action Buttons Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Actions"
+                android:textColor="#000000"
+                android:textSize="20sp"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- Lottery Actions -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRunLottery"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Run Lottery"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textAllCaps="false"
+                android:fontFamily="sans-serif-medium"
+                app:backgroundTint="#000000"
+                app:cornerRadius="8dp"
+                app:icon="@android:drawable/ic_menu_rotate"
+                app:iconTint="#FFFFFF"
+                android:layout_marginBottom="12dp"/>
+
+            <!-- Action Buttons Grid -->
             <LinearLayout
-                android:id="@+id/toolsSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginBottom="24dp"
-                android:visibility="gone">
+                android:layout_marginBottom="12dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Organizer Tools"
-                    android:textColor="#000000"
-                    android:textSize="18sp"
-                    android:fontFamily="sans-serif-medium"
-                    android:layout_marginBottom="12dp"/>
-
+                <!-- Row 1 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="12dp">
 
+                    <!-- View Entrants -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnViewEntrants"
+                        android:layout_width="0dp"
+                        android:layout_height="56dp"
+                        android:layout_weight="1"
+                        android:text="View Entrants"
+                        android:textColor="#000000"
+                        android:textSize="14sp"
+                        android:textAllCaps="false"
+                        app:backgroundTint="#F5F5F5"
+                        app:strokeColor="#000000"
+                        app:strokeWidth="1dp"
+                        app:cornerRadius="8dp"
+                        app:icon="@android:drawable/ic_menu_view"
+                        app:iconTint="#000000"
+                        android:layout_marginEnd="6dp"/>
+
+                    <!-- View Map -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnViewMap"
+                        android:layout_width="0dp"
+                        android:layout_height="56dp"
+                        android:layout_weight="1"
+                        android:text="View Map"
+                        android:textColor="#000000"
+                        android:textSize="14sp"
+                        android:textAllCaps="false"
+                        app:backgroundTint="#F5F5F5"
+                        app:strokeColor="#000000"
+                        app:strokeWidth="1dp"
+                        app:cornerRadius="8dp"
+                        app:icon="@android:drawable/ic_dialog_map"
+                        app:iconTint="#000000"
+                        android:layout_marginStart="6dp"/>
+
+                </LinearLayout>
+
+                <!-- Row 2 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="12dp">
+
+                    <!-- Generate QR -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnGenerateQR"
+                        android:layout_width="0dp"
+                        android:layout_height="56dp"
+                        android:layout_weight="1"
+                        android:text="QR Code"
+                        android:textColor="#000000"
+                        android:textSize="14sp"
+                        android:textAllCaps="false"
+                        app:backgroundTint="#F5F5F5"
+                        app:strokeColor="#000000"
+                        app:strokeWidth="1dp"
+                        app:cornerRadius="8dp"
+                        app:icon="@android:drawable/ic_menu_gallery"
+                        app:iconTint="#000000"
+                        android:layout_marginEnd="6dp"/>
+
+                    <!-- Send Notification -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSendNotification"
+                        android:layout_width="0dp"
+                        android:layout_height="56dp"
+                        android:layout_weight="1"
+                        android:text="Send Message"
+                        android:textColor="#000000"
+                        android:textSize="14sp"
+                        android:textAllCaps="false"
+                        app:backgroundTint="#F5F5F5"
+                        app:strokeColor="#000000"
+                        app:strokeWidth="1dp"
+                        app:cornerRadius="8dp"
+                        app:icon="@android:drawable/ic_dialog_email"
+                        app:iconTint="#000000"
+                        android:layout_marginStart="6dp"/>
+
+                </LinearLayout>
+
+                <!-- Row 3 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="12dp">
+
+                    <!-- Export CSV -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnExportCSV"
                         android:layout_width="0dp"
-                        android:layout_height="48dp"
+                        android:layout_height="56dp"
                         android:layout_weight="1"
-                        android:text="📊 Export CSV"
+                        android:text="Export List"
                         android:textColor="#000000"
                         android:textSize="14sp"
                         android:textAllCaps="false"
@@ -227,14 +330,17 @@
                         app:strokeColor="#000000"
                         app:strokeWidth="1dp"
                         app:cornerRadius="8dp"
-                        android:layout_marginEnd="8dp"/>
+                        app:icon="@android:drawable/ic_menu_save"
+                        app:iconTint="#000000"
+                        android:layout_marginEnd="6dp"/>
 
+                    <!-- Update Poster -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnUpdatePoster"
                         android:layout_width="0dp"
-                        android:layout_height="48dp"
+                        android:layout_height="56dp"
                         android:layout_weight="1"
-                        android:text="🖼️ Update Poster"
+                        android:text="Update Poster"
                         android:textColor="#000000"
                         android:textSize="14sp"
                         android:textAllCaps="false"
@@ -242,47 +348,77 @@
                         app:strokeColor="#000000"
                         app:strokeWidth="1dp"
                         app:cornerRadius="8dp"
-                        android:layout_marginEnd="8dp"/>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnSendMessage"
-                        android:layout_width="0dp"
-                        android:layout_height="48dp"
-                        android:layout_weight="1"
-                        android:text="💬 Message"
-                        android:textColor="#000000"
-                        android:textSize="14sp"
-                        android:textAllCaps="false"
-                        app:backgroundTint="#F5F5F5"
-                        app:strokeColor="#000000"
-                        app:strokeWidth="1dp"
-                        app:cornerRadius="8dp"/>
+                        app:icon="@android:drawable/ic_menu_edit"
+                        app:iconTint="#000000"
+                        android:layout_marginStart="6dp"/>
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <!-- Tabs -->
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/tabLayout"
-                android:layout_width="match_parent"
+            <!-- Danger Zone -->
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#FFFFFF"
-                app:tabTextColor="#5E5E5E"
-                app:tabSelectedTextColor="#000000"
-                app:tabIndicatorColor="#000000"
-                app:tabMode="fixed"
-                android:layout_marginBottom="16dp"/>
+                android:text="Danger Zone"
+                android:textColor="#D32F2F"
+                android:textSize="16sp"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="12dp"/>
 
-            <!-- Entrants List -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvEntrants"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCancelEvent"
                 android:layout_width="match_parent"
-                android:layout_height="400dp"
-                android:nestedScrollingEnabled="false"/>
+                android:layout_height="56dp"
+                android:text="Cancel Event"
+                android:textColor="#D32F2F"
+                android:textSize="16sp"
+                android:textAllCaps="false"
+                android:fontFamily="sans-serif-medium"
+                app:backgroundTint="#FFEBEE"
+                app:strokeColor="#D32F2F"
+                app:strokeWidth="1dp"
+                app:cornerRadius="8dp"
+                app:icon="@android:drawable/ic_delete"
+                app:iconTint="#D32F2F"
+                android:layout_marginBottom="32dp"/>
 
         </LinearLayout>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Loading Overlay -->
+    <FrameLayout
+        android:id="@+id/loadingView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loading..."
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:layout_marginTop="16dp"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

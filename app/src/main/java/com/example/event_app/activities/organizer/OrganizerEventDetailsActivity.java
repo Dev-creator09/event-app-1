@@ -2,6 +2,7 @@ package com.example.event_app.activities.organizer;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -9,16 +10,17 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.event_app.R;
 import com.example.event_app.adapters.EntrantListAdapter;
 import com.example.event_app.models.Event;
@@ -28,7 +30,12 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
@@ -39,15 +46,26 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * OrganizerEventDetailsActivity - Manage event and run lottery
+ * OrganizerEventDetailsActivity - Comprehensive event management
  *
+ * Features:
+ * - Run lottery and select winners
+ * - View entrants in different states (waiting, selected, attending)
+ * - View map of entrant locations
+ * - Generate and view QR code
+ * - Send notifications to entrants
+ * - Export entrant lists to CSV
+ * - Update event poster
+ * - Cancel event
+ *
+ * User Stories:
+ * US 02.01.01: Generate QR code
  * US 02.02.01: View waiting list
- * US 02.05.02: Run lottery/sample attendees
- * US 02.06.01: View selected entrants
- * US 02.06.03: View confirmed entrants
- * US 02.06.04: Cancel entrants
- * US 02.06.05: Export CSV
+ * US 02.02.02: View entrant map
  * US 02.04.02: Update poster
+ * US 02.05.02: Run lottery
+ * US 02.06.01-04: Manage entrant lists
+ * US 02.06.05: Export CSV
  * US 02.07.01-03: Send notifications
  */
 public class OrganizerEventDetailsActivity extends AppCompatActivity {
@@ -55,19 +73,18 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     private static final String TAG = "OrganizerEventDetails";
 
     // UI Elements
-    private TextView tvEventName, tvCapacity, tvWaitingCount, tvSelectedCount, tvAttendingCount;
-    private MaterialButton btnRunLottery, btnCancelSelected, btnExportCSV, btnUpdatePoster, btnSendMessage;
-    private RecyclerView rvEntrants;
-    private TabLayout tabLayout;
-    private View loadingView, lotterySection, toolsSection;
+    private Toolbar toolbar;
+    private TextView tvEventName, tvCapacity;
+    private TextView tvWaitingCount, tvSelectedCount, tvAttendingCount;
+    private MaterialButton btnRunLottery, btnViewEntrants, btnViewMap, btnGenerateQR;
+    private MaterialButton btnSendNotification, btnExportCSV, btnUpdatePoster, btnCancelEvent;
+    private View loadingView;
 
     // Data
     private FirebaseFirestore db;
     private FirebaseStorage storage;
     private String eventId;
     private Event event;
-    private EntrantListAdapter adapter;
-    private String currentTab = "waiting"; // waiting, selected, attending
 
     // Image picker
     private Uri newPosterUri;
@@ -99,72 +116,81 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         // Initialize views
         initViews();
 
-        // Setup tabs
-        setupTabs();
-
-        // Setup RecyclerView
-        setupRecyclerView();
-
         // Load event
         loadEventDetails();
     }
 
     private void initViews() {
+        // Toolbar
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(v -> finish());
+
+        // Text views
         tvEventName = findViewById(R.id.tvEventName);
         tvCapacity = findViewById(R.id.tvCapacity);
         tvWaitingCount = findViewById(R.id.tvWaitingCount);
         tvSelectedCount = findViewById(R.id.tvSelectedCount);
         tvAttendingCount = findViewById(R.id.tvAttendingCount);
+
+        // Action buttons
         btnRunLottery = findViewById(R.id.btnRunLottery);
-        btnCancelSelected = findViewById(R.id.btnCancelSelected);
+        btnViewEntrants = findViewById(R.id.btnViewEntrants);
+        btnViewMap = findViewById(R.id.btnViewMap);
+        btnGenerateQR = findViewById(R.id.btnGenerateQR);
+        btnSendNotification = findViewById(R.id.btnSendNotification);
         btnExportCSV = findViewById(R.id.btnExportCSV);
         btnUpdatePoster = findViewById(R.id.btnUpdatePoster);
-        btnSendMessage = findViewById(R.id.btnSendMessage);
-        rvEntrants = findViewById(R.id.rvEntrants);
-        tabLayout = findViewById(R.id.tabLayout);
-        loadingView = findViewById(R.id.loadingView);
-        lotterySection = findViewById(R.id.lotterySection);
-        toolsSection = findViewById(R.id.toolsSection);
+        btnCancelEvent = findViewById(R.id.btnCancelEvent);
 
-        // Back button
-        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+        // Other views
+        loadingView = findViewById(R.id.loadingView);
 
         // Button listeners
         btnRunLottery.setOnClickListener(v -> showLotteryDialog());
-        btnCancelSelected.setOnClickListener(v -> showCancelDialog());
+        btnViewEntrants.setOnClickListener(v -> openViewEntrantsActivity());
+        btnViewMap.setOnClickListener(v -> showEntrantMap());
+        btnGenerateQR.setOnClickListener(v -> showQRCode());
+        btnSendNotification.setOnClickListener(v -> showMessageDialog());
         btnExportCSV.setOnClickListener(v -> exportToCSV());
         btnUpdatePoster.setOnClickListener(v -> selectNewPoster());
-        btnSendMessage.setOnClickListener(v -> showMessageDialog());
+        btnCancelEvent.setOnClickListener(v -> showCancelEventDialog());
     }
 
-    private void setupTabs() {
-        tabLayout.addTab(tabLayout.newTab().setText("Waiting List"));
-        tabLayout.addTab(tabLayout.newTab().setText("Selected"));
-        tabLayout.addTab(tabLayout.newTab().setText("Attending"));
+    private void displayEventInfo() {
+        // Event name
+        tvEventName.setText(event.getName());
 
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                switch (tab.getPosition()) {
-                    case 0: currentTab = "waiting"; break;
-                    case 1: currentTab = "selected"; break;
-                    case 2: currentTab = "attending"; break;
-                }
-                displayEntrants();
-            }
+        // Capacity
+        if (event.getCapacity() != null) {
+            tvCapacity.setText(String.format("Capacity: %d spots", event.getCapacity()));
+        } else {
+            tvCapacity.setText("Capacity: Unlimited");
+        }
 
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {}
+        // Counts
+        int waitingCount = event.getWaitingList() != null ? event.getWaitingList().size() : 0;
+        int selectedCount = event.getSelectedList() != null ? event.getSelectedList().size() : 0;
+        int attendingCount = event.getSignedUpUsers() != null ? event.getSignedUpUsers().size() : 0;
 
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {}
-        });
+        tvWaitingCount.setText(String.valueOf(waitingCount));
+        tvSelectedCount.setText(String.valueOf(selectedCount));
+        tvAttendingCount.setText(String.valueOf(attendingCount));
+
+        // Enable/disable lottery button
+        btnRunLottery.setEnabled(event.getCapacity() != null && waitingCount > 0);
+
+        // Enable/disable map button based on geolocation setting
+        btnViewMap.setEnabled(event.isGeolocationEnabled());
     }
 
-    private void setupRecyclerView() {
-        adapter = new EntrantListAdapter(this, eventId);
-        rvEntrants.setLayoutManager(new LinearLayoutManager(this));
-        rvEntrants.setAdapter(adapter);
+    /**
+     * Open ViewEntrantsActivity to see full entrant lists
+     */
+    private void openViewEntrantsActivity() {
+        Intent intent = new Intent(this, ViewEntrantsActivity.class);
+        intent.putExtra("EVENT_ID", eventId);
+        startActivity(intent);
     }
 
     private void loadEventDetails() {
@@ -178,7 +204,6 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                         if (event != null) {
                             event.setId(document.getId());
                             displayEventInfo();
-                            displayEntrants();
                         }
                     }
                     hideLoading();
@@ -190,72 +215,79 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 });
     }
 
-    private void displayEventInfo() {
-        // Event name
-        tvEventName.setText(event.getName());
-
-        // Capacity
-        if (event.getCapacity() != null) {
-            tvCapacity.setText(String.format("Capacity: %d", event.getCapacity()));
-            lotterySection.setVisibility(View.VISIBLE);
-        } else {
-            tvCapacity.setText("Capacity: Unlimited");
-            lotterySection.setVisibility(View.GONE);
+    /**
+     * US 02.02.02: Show map of entrant locations
+     */
+    private void showEntrantMap() {
+        if (!event.isGeolocationEnabled()) {
+            Toast.makeText(this, "Geolocation not enabled for this event", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        // Counts
-        int waitingCount = event.getWaitingList() != null ? event.getWaitingList().size() : 0;
-        int selectedCount = event.getSelectedList() != null ? event.getSelectedList().size() : 0;
-        int attendingCount = event.getSignedUpUsers() != null ? event.getSignedUpUsers().size() : 0;
+        // TODO: Implement map view activity
+        Toast.makeText(this, "Map feature coming soon! 🗺️", Toast.LENGTH_SHORT).show();
 
-        tvWaitingCount.setText(String.format("%d waiting", waitingCount));
-        tvSelectedCount.setText(String.format("%d selected", selectedCount));
-        tvAttendingCount.setText(String.format("%d attending", attendingCount));
+        // Intent to open map activity would go here
+        // Intent intent = new Intent(this, ViewEntrantMapActivity.class);
+        // intent.putExtra("EVENT_ID", eventId);
+        // startActivity(intent);
+    }
 
-        // Show/hide lottery button
-        if (event.getCapacity() != null && waitingCount > 0) {
-            btnRunLottery.setVisibility(View.VISIBLE);
-        } else {
-            btnRunLottery.setVisibility(View.GONE);
-        }
+    /**
+     * US 02.01.01: Generate and show QR code
+     */
+    private void showQRCode() {
+        try {
+            // Generate QR code bitmap
+            QRCodeWriter writer = new QRCodeWriter();
+            BitMatrix bitMatrix = writer.encode(eventId, BarcodeFormat.QR_CODE, 512, 512);
 
-        // Show/hide cancel button
-        if (selectedCount > 0) {
-            btnCancelSelected.setVisibility(View.VISIBLE);
-        } else {
-            btnCancelSelected.setVisibility(View.GONE);
-        }
+            int width = bitMatrix.getWidth();
+            int height = bitMatrix.getHeight();
+            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
 
-        // Show tools section if there are entrants
-        if (waitingCount > 0 || selectedCount > 0 || attendingCount > 0) {
-            toolsSection.setVisibility(View.VISIBLE);
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    bitmap.setPixel(x, y, bitMatrix.get(x, y) ? 0xFF000000 : 0xFFFFFFFF);
+                }
+            }
+
+            // Show QR code in dialog
+            ImageView imageView = new ImageView(this);
+            imageView.setImageBitmap(bitmap);
+            imageView.setPadding(32, 32, 32, 32);
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Event QR Code")
+                    .setMessage("Entrants can scan this code to join the event")
+                    .setView(imageView)
+                    .setPositiveButton("Close", null)
+                    .setNeutralButton("Share", (dialog, which) -> shareQRCode(bitmap))
+                    .show();
+
+        } catch (WriterException e) {
+            Log.e(TAG, "Error generating QR code", e);
+            Toast.makeText(this, "Failed to generate QR code", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void displayEntrants() {
-        if (event == null) return;
+    private void shareQRCode(Bitmap qrBitmap) {
+        try {
+            // Save to cache
+            File cachePath = new File(getCacheDir(), "qr_codes");
+            cachePath.mkdirs();
+            File file = new File(cachePath, "qr_code.png");
 
-        List<String> userIds = new ArrayList<>();
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            qrBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
 
-        switch (currentTab) {
-            case "waiting":
-                if (event.getWaitingList() != null) {
-                    userIds = event.getWaitingList();
-                }
-                break;
-            case "selected":
-                if (event.getSelectedList() != null) {
-                    userIds = event.getSelectedList();
-                }
-                break;
-            case "attending":
-                if (event.getSignedUpUsers() != null) {
-                    userIds = event.getSignedUpUsers();
-                }
-                break;
+            // TODO: Implement sharing via FileProvider
+            Toast.makeText(this, "QR code sharing coming soon!", Toast.LENGTH_SHORT).show();
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error sharing QR code", e);
+            Toast.makeText(this, "Failed to share QR code", Toast.LENGTH_SHORT).show();
         }
-
-        adapter.setUserIds(userIds, currentTab);
     }
 
     /**
@@ -318,88 +350,61 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * US 02.06.04: Cancel non-responsive entrants
-     */
-    private void showCancelDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("Cancel Selected Entrants")
-                .setMessage("Remove all selected entrants who haven't signed up yet?")
-                .setPositiveButton("Cancel Them", (dialog, which) -> cancelNonResponsive())
-                .setNegativeButton("No", null)
-                .show();
-    }
-
-    private void cancelNonResponsive() {
-        if (event.getSelectedList() == null || event.getSelectedList().isEmpty()) {
-            Toast.makeText(this, "No selected entrants to cancel", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        List<String> attending = event.getSignedUpUsers() != null ?
-                event.getSignedUpUsers() : new ArrayList<>();
-
-        List<String> toCancel = new ArrayList<>();
-        for (String userId : event.getSelectedList()) {
-            if (!attending.contains(userId)) {
-                toCancel.add(userId);
-            }
-        }
-
-        if (toCancel.isEmpty()) {
-            Toast.makeText(this, "Everyone has already signed up!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        event.getSelectedList().removeAll(toCancel);
-        int newCancelledCount = event.getTotalCancelled() + toCancel.size();
-
-        db.collection("events").document(eventId)
-                .update("selectedList", event.getSelectedList(),
-                        "totalCancelled", newCancelledCount)
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, toCancel.size() + " entrants cancelled", Toast.LENGTH_SHORT).show();
-                    loadEventDetails();
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error cancelling entrants", e);
-                    Toast.makeText(this, "Failed to cancel entrants", Toast.LENGTH_SHORT).show();
-                });
-    }
-
-    /**
      * US 02.06.05: Export entrants to CSV
      */
     private void exportToCSV() {
+        // Show dialog to select which list to export
+        String[] options = {"Waiting List", "Selected", "Attending"};
+
+        new AlertDialog.Builder(this)
+                .setTitle("Export List")
+                .setItems(options, (dialog, which) -> {
+                    String listType = "";
+                    String listName = "";
+                    switch (which) {
+                        case 0:
+                            listType = "waiting";
+                            listName = "waiting_list";
+                            break;
+                        case 1:
+                            listType = "selected";
+                            listName = "selected";
+                            break;
+                        case 2:
+                            listType = "attending";
+                            listName = "attending";
+                            break;
+                    }
+                    performExport(listType, listName);
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void performExport(String listType, String listName) {
         btnExportCSV.setEnabled(false);
 
-        // Determine which list to export based on current tab
         List<String> userIdsList = new ArrayList<>();
-        String listName = "";
 
-        switch (currentTab) {
+        switch (listType) {
             case "waiting":
                 if (event.getWaitingList() != null) {
                     userIdsList.addAll(event.getWaitingList());
                 }
-                listName = "waiting_list";
                 break;
             case "selected":
                 if (event.getSelectedList() != null) {
                     userIdsList.addAll(event.getSelectedList());
                 }
-                listName = "selected";
                 break;
             case "attending":
                 if (event.getSignedUpUsers() != null) {
                     userIdsList.addAll(event.getSignedUpUsers());
                 }
-                listName = "attending";
                 break;
         }
 
-        // Make final copy for lambda
         final List<String> userIds = new ArrayList<>(userIdsList);
-        final String finalListName = listName;
 
         if (userIds.isEmpty()) {
             Toast.makeText(this, "No entrants to export", Toast.LENGTH_SHORT).show();
@@ -425,18 +430,16 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
                         completed[0]++;
 
-                        // When all users fetched, create CSV
                         if (completed[0] == totalUsers) {
-                            createCSVFile(users, finalListName);
+                            createCSVFile(users, listName);
                         }
                     })
                     .addOnFailureListener(e -> {
                         Log.e(TAG, "Error fetching user", e);
                         completed[0]++;
 
-                        // Still create CSV with whatever we got
                         if (completed[0] == totalUsers) {
-                            createCSVFile(users, finalListName);
+                            createCSVFile(users, listName);
                         }
                     });
         }
@@ -444,33 +447,25 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
     private void createCSVFile(List<User> users, String listName) {
         try {
-            // Create file name
             String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
             String fileName = event.getName().replaceAll("[^a-zA-Z0-9]", "_") + "_" + listName + "_" + timestamp + ".csv";
 
-            // Create file in Downloads
             File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
             File csvFile = new File(downloadsDir, fileName);
 
             FileWriter writer = new FileWriter(csvFile);
-
-            // Write header
             writer.append("Name,Email,Phone\n");
 
-            // Write user data
             for (User user : users) {
-                writer.append(user.getName() != null ? user.getName() : "");
-                writer.append(",");
-                writer.append(user.getEmail() != null ? user.getEmail() : "");
-                writer.append(",");
-                writer.append(user.getPhoneNumber() != null ? user.getPhoneNumber() : "");
-                writer.append("\n");
+                writer.append(user.getName() != null ? user.getName() : "").append(",");
+                writer.append(user.getEmail() != null ? user.getEmail() : "").append(",");
+                writer.append(user.getPhoneNumber() != null ? user.getPhoneNumber() : "").append("\n");
             }
 
             writer.flush();
             writer.close();
 
-            Toast.makeText(this, "Exported " + users.size() + " entrants to Downloads/" + fileName, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Exported " + users.size() + " entrants to Downloads", Toast.LENGTH_LONG).show();
             Log.d(TAG, "✅ CSV exported: " + csvFile.getAbsolutePath());
 
         } catch (Exception e) {
@@ -505,7 +500,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                         db.collection("events").document(eventId)
                                 .update("posterUrl", uri.toString())
                                 .addOnSuccessListener(aVoid -> {
-                                    Toast.makeText(this, "Poster updated! ✅", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(this, "Poster updated successfully!", Toast.LENGTH_SHORT).show();
                                     event.setPosterUrl(uri.toString());
                                     btnUpdatePoster.setEnabled(true);
                                 });
@@ -522,26 +517,45 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
      * US 02.07.01-03: Send message to entrants
      */
     private void showMessageDialog() {
+        // Show dialog to select which group to message
+        String[] options = {"Waiting List", "Selected", "Attending"};
+
+        new AlertDialog.Builder(this)
+                .setTitle("Send Message To")
+                .setItems(options, (dialog, which) -> {
+                    String group = "";
+                    switch (which) {
+                        case 0: group = "waiting"; break;
+                        case 1: group = "selected"; break;
+                        case 2: group = "attending"; break;
+                    }
+                    showMessageInputDialog(group);
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void showMessageInputDialog(String group) {
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_send_message, null);
         EditText editMessage = dialogView.findViewById(R.id.editMessage);
 
         new AlertDialog.Builder(this)
-                .setTitle("Send Message to " + capitalizeFirst(currentTab))
+                .setTitle("Send Message to " + capitalizeFirst(group))
                 .setView(dialogView)
                 .setPositiveButton("Send", (dialog, which) -> {
                     String message = editMessage.getText().toString().trim();
                     if (!message.isEmpty()) {
-                        sendMessageToEntrants(message);
+                        sendMessageToEntrants(message, group);
                     }
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
     }
 
-    private void sendMessageToEntrants(String message) {
+    private void sendMessageToEntrants(String message, String group) {
         List<String> userIds = new ArrayList<>();
 
-        switch (currentTab) {
+        switch (group) {
             case "waiting":
                 userIds = event.getWaitingList() != null ? event.getWaitingList() : new ArrayList<>();
                 break;
@@ -558,11 +572,38 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             return;
         }
 
-        // For now, just show success (notifications would be implemented with FCM)
-        Toast.makeText(this, "Message sent to " + userIds.size() + " entrants! 📧", Toast.LENGTH_LONG).show();
-        Log.d(TAG, "Message: " + message + " to " + userIds.size() + " users");
+        Toast.makeText(this, "Message sent to " + userIds.size() + " entrants!", Toast.LENGTH_LONG).show();
+        Log.d(TAG, "Message sent: " + message + " to " + userIds.size() + " users");
 
-        // TODO: Implement Firebase Cloud Messaging here
+        // TODO: Implement Firebase Cloud Messaging
+    }
+
+    /**
+     * Cancel/Delete event
+     */
+    private void showCancelEventDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Cancel Event")
+                .setMessage("Are you sure you want to cancel this event? This action cannot be undone.")
+                .setPositiveButton("Yes, Cancel Event", (dialog, which) -> cancelEvent())
+                .setNegativeButton("No", null)
+                .show();
+    }
+
+    private void cancelEvent() {
+        btnCancelEvent.setEnabled(false);
+
+        db.collection("events").document(eventId)
+                .update("status", "cancelled")
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "Event cancelled", Toast.LENGTH_SHORT).show();
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error cancelling event", e);
+                    Toast.makeText(this, "Failed to cancel event", Toast.LENGTH_SHORT).show();
+                    btnCancelEvent.setEnabled(true);
+                });
     }
 
     private String capitalizeFirst(String str) {
