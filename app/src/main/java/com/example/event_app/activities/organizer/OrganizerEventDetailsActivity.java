@@ -18,15 +18,13 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.event_app.R;
-import com.example.event_app.adapters.EntrantListAdapter;
+import com.example.event_app.activities.organizer.ViewEntrantsActivity;
 import com.example.event_app.models.Event;
+import com.example.event_app.models.Notification;
 import com.example.event_app.models.User;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.tabs.TabLayout;
+import com.example.event_app.services.NotificationService;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -45,17 +43,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import com.google.android.material.button.MaterialButton;
+
 /**
- * OrganizerEventDetailsActivity - Comprehensive event management
+ * OrganizerEventDetailsActivity - Comprehensive event management with notifications
  *
  * Features:
- * - Run lottery and select winners
- * - View entrants in different states (waiting, selected, attending)
+ * - Run lottery and select winners (with notifications)
+ * - View entrants in different states
  * - View map of entrant locations
  * - Generate and view QR code
  * - Send notifications to entrants
  * - Export entrant lists to CSV
  * - Update event poster
+ * - Send event reminders
  * - Cancel event
  *
  * User Stories:
@@ -63,7 +64,7 @@ import java.util.Locale;
  * US 02.02.01: View waiting list
  * US 02.02.02: View entrant map
  * US 02.04.02: Update poster
- * US 02.05.02: Run lottery
+ * US 02.05.02: Run lottery (with notifications)
  * US 02.06.01-04: Manage entrant lists
  * US 02.06.05: Export CSV
  * US 02.07.01-03: Send notifications
@@ -78,11 +79,13 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     private TextView tvWaitingCount, tvSelectedCount, tvAttendingCount;
     private MaterialButton btnRunLottery, btnViewEntrants, btnViewMap, btnGenerateQR;
     private MaterialButton btnSendNotification, btnExportCSV, btnUpdatePoster, btnCancelEvent;
+    private MaterialButton btnSendReminder; // New button for event reminders
     private View loadingView;
 
     // Data
     private FirebaseFirestore db;
     private FirebaseStorage storage;
+    private NotificationService notificationService;
     private String eventId;
     private Event event;
 
@@ -112,6 +115,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         // Initialize Firebase
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
+        notificationService = new NotificationService();
 
         // Initialize views
         initViews();
@@ -143,6 +147,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         btnUpdatePoster = findViewById(R.id.btnUpdatePoster);
         btnCancelEvent = findViewById(R.id.btnCancelEvent);
 
+
         // Other views
         loadingView = findViewById(R.id.loadingView);
 
@@ -155,20 +160,21 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         btnExportCSV.setOnClickListener(v -> exportToCSV());
         btnUpdatePoster.setOnClickListener(v -> selectNewPoster());
         btnCancelEvent.setOnClickListener(v -> showCancelEventDialog());
+
+        if (btnSendReminder != null) {
+            btnSendReminder.setOnClickListener(v -> sendEventReminders());
+        }
     }
 
     private void displayEventInfo() {
-        // Event name
         tvEventName.setText(event.getName());
 
-        // Capacity
         if (event.getCapacity() != null) {
             tvCapacity.setText(String.format("Capacity: %d spots", event.getCapacity()));
         } else {
             tvCapacity.setText("Capacity: Unlimited");
         }
 
-        // Counts
         int waitingCount = event.getWaitingList() != null ? event.getWaitingList().size() : 0;
         int selectedCount = event.getSelectedList() != null ? event.getSelectedList().size() : 0;
         int attendingCount = event.getSignedUpUsers() != null ? event.getSignedUpUsers().size() : 0;
@@ -177,16 +183,10 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         tvSelectedCount.setText(String.valueOf(selectedCount));
         tvAttendingCount.setText(String.valueOf(attendingCount));
 
-        // Enable/disable lottery button
         btnRunLottery.setEnabled(event.getCapacity() != null && waitingCount > 0);
-
-        // Enable/disable map button based on geolocation setting
         btnViewMap.setEnabled(event.isGeolocationEnabled());
     }
 
-    /**
-     * Open ViewEntrantsActivity to see full entrant lists
-     */
     private void openViewEntrantsActivity() {
         Intent intent = new Intent(this, ViewEntrantsActivity.class);
         intent.putExtra("EVENT_ID", eventId);
@@ -215,30 +215,16 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 });
     }
 
-    /**
-     * US 02.02.02: Show map of entrant locations
-     */
     private void showEntrantMap() {
         if (!event.isGeolocationEnabled()) {
             Toast.makeText(this, "Geolocation not enabled for this event", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        // TODO: Implement map view activity
         Toast.makeText(this, "Map feature coming soon! 🗺️", Toast.LENGTH_SHORT).show();
-
-        // Intent to open map activity would go here
-        // Intent intent = new Intent(this, ViewEntrantMapActivity.class);
-        // intent.putExtra("EVENT_ID", eventId);
-        // startActivity(intent);
     }
 
-    /**
-     * US 02.01.01: Generate and show QR code
-     */
     private void showQRCode() {
         try {
-            // Generate QR code bitmap
             QRCodeWriter writer = new QRCodeWriter();
             BitMatrix bitMatrix = writer.encode(eventId, BarcodeFormat.QR_CODE, 512, 512);
 
@@ -252,7 +238,6 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 }
             }
 
-            // Show QR code in dialog
             ImageView imageView = new ImageView(this);
             imageView.setImageBitmap(bitmap);
             imageView.setPadding(32, 32, 32, 32);
@@ -262,31 +247,11 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                     .setMessage("Entrants can scan this code to join the event")
                     .setView(imageView)
                     .setPositiveButton("Close", null)
-                    .setNeutralButton("Share", (dialog, which) -> shareQRCode(bitmap))
                     .show();
 
         } catch (WriterException e) {
             Log.e(TAG, "Error generating QR code", e);
             Toast.makeText(this, "Failed to generate QR code", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void shareQRCode(Bitmap qrBitmap) {
-        try {
-            // Save to cache
-            File cachePath = new File(getCacheDir(), "qr_codes");
-            cachePath.mkdirs();
-            File file = new File(cachePath, "qr_code.png");
-
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            qrBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-
-            // TODO: Implement sharing via FileProvider
-            Toast.makeText(this, "QR code sharing coming soon!", Toast.LENGTH_SHORT).show();
-
-        } catch (Exception e) {
-            Log.e(TAG, "Error sharing QR code", e);
-            Toast.makeText(this, "Failed to share QR code", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -311,35 +276,50 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
         new AlertDialog.Builder(this)
                 .setTitle("Run Lottery")
-                .setMessage(String.format("Select %d winners from %d people on waiting list?", toSelect, waitingCount))
+                .setMessage(String.format("Select %d winners from %d people on waiting list?\n\nNotifications will be sent to all participants.", toSelect, waitingCount))
                 .setPositiveButton("Run Lottery", (dialog, which) -> runLottery(toSelect))
                 .setNegativeButton("Cancel", null)
                 .show();
     }
 
+    /**
+     * Run lottery and send notifications to winners and non-winners
+     */
     private void runLottery(int numberOfWinners) {
         btnRunLottery.setEnabled(false);
 
         List<String> waitingList = new ArrayList<>(event.getWaitingList());
         Collections.shuffle(waitingList);
+
+        // Select winners
         List<String> winners = waitingList.subList(0, Math.min(numberOfWinners, waitingList.size()));
+
+        // Get non-winners (everyone else on waiting list)
+        List<String> notSelected = new ArrayList<>(waitingList);
+        notSelected.removeAll(winners);
 
         if (event.getSelectedList() == null) {
             event.setSelectedList(new ArrayList<>());
         }
 
+        // Add winners to selected list
         for (String winner : winners) {
             if (!event.getSelectedList().contains(winner)) {
                 event.getSelectedList().add(winner);
             }
         }
 
+        // Update Firebase
         db.collection("events").document(eventId)
                 .update("selectedList", event.getSelectedList(),
                         "totalSelected", event.getSelectedList().size())
                 .addOnSuccessListener(aVoid -> {
                     Log.d(TAG, "✅ Lottery completed: " + winners.size() + " winners selected");
-                    Toast.makeText(this, winners.size() + " winners selected! 🎉", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, winners.size() + " winners selected! Sending notifications...", Toast.LENGTH_LONG).show();
+
+                    // ✨ Send notifications to winners and non-winners
+                    sendLotteryNotifications(winners, notSelected);
+
                     loadEventDetails();
                 })
                 .addOnFailureListener(e -> {
@@ -350,10 +330,51 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     }
 
     /**
+     * ✨ NEW: Send notifications to lottery winners and non-winners
+     */
+    private void sendLotteryNotifications(List<String> winners, List<String> notSelected) {
+        String eventName = event.getName();
+
+        // Send winner notifications
+        if (!winners.isEmpty()) {
+            notificationService.sendBulkNotifications(
+                    winners,
+                    eventId,
+                    eventName,
+                    Notification.TYPE_LOTTERY_WON,
+                    "🎉 You've Been Selected!",
+                    "Congratulations! You've been selected for " + eventName + ". Check your invitations to accept or decline.",
+                    (successCount, failureCount) -> {
+                        Log.d(TAG, "Sent " + successCount + " winner notifications");
+                        runOnUiThread(() -> {
+                            Toast.makeText(this,
+                                    "Notified " + successCount + " winners!",
+                                    Toast.LENGTH_SHORT).show();
+                        });
+                    }
+            );
+        }
+
+        // Send not-selected notifications
+        if (!notSelected.isEmpty()) {
+            notificationService.sendBulkNotifications(
+                    notSelected,
+                    eventId,
+                    eventName,
+                    Notification.TYPE_LOTTERY_LOST,
+                    "Lottery Results",
+                    "You weren't selected for " + eventName + " this time. You may still have a chance if spots become available!",
+                    (successCount, failureCount) -> {
+                        Log.d(TAG, "Sent " + successCount + " not-selected notifications");
+                    }
+            );
+        }
+    }
+
+    /**
      * US 02.06.05: Export entrants to CSV
      */
     private void exportToCSV() {
-        // Show dialog to select which list to export
         String[] options = {"Waiting List", "Selected", "Attending"};
 
         new AlertDialog.Builder(this)
@@ -412,7 +433,6 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             return;
         }
 
-        // Fetch user details
         List<User> users = new ArrayList<>();
         final int totalUsers = userIds.size();
         final int[] completed = {0};
@@ -476,9 +496,6 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         btnExportCSV.setEnabled(true);
     }
 
-    /**
-     * US 02.04.02: Update event poster
-     */
     private void selectNewPoster() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         imagePickerLauncher.launch(intent);
@@ -517,7 +534,6 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
      * US 02.07.01-03: Send message to entrants
      */
     private void showMessageDialog() {
-        // Show dialog to select which group to message
         String[] options = {"Waiting List", "Selected", "Attending"};
 
         new AlertDialog.Builder(this)
@@ -552,6 +568,9 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 .show();
     }
 
+    /**
+     * ✨ UPDATED: Send custom message with actual notifications
+     */
     private void sendMessageToEntrants(String message, String group) {
         List<String> userIds = new ArrayList<>();
 
@@ -572,15 +591,54 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             return;
         }
 
-        Toast.makeText(this, "Message sent to " + userIds.size() + " entrants!", Toast.LENGTH_LONG).show();
-        Log.d(TAG, "Message sent: " + message + " to " + userIds.size() + " users");
-
-        // TODO: Implement Firebase Cloud Messaging
+        // ✨ Send notifications
+        notificationService.sendBulkNotifications(
+                userIds,
+                eventId,
+                event.getName(),
+                Notification.TYPE_ORGANIZER_MESSAGE,
+                "Message from Organizer",
+                message,
+                (successCount, failureCount) -> {
+                    runOnUiThread(() -> {
+                        Toast.makeText(this,
+                                "Message sent to " + successCount + " entrants!",
+                                Toast.LENGTH_LONG).show();
+                    });
+                    Log.d(TAG, "Message sent: " + message + " to " + successCount + " users");
+                }
+        );
     }
 
     /**
-     * Cancel/Delete event
+     * ✨ NEW: Send event reminders to all attending users
      */
+    private void sendEventReminders() {
+        String eventName = event.getName();
+        List<String> attendees = event.getSignedUpUsers();
+
+        if (attendees == null || attendees.isEmpty()) {
+            Toast.makeText(this, "No attendees to remind", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        notificationService.sendBulkNotifications(
+                attendees,
+                eventId,
+                eventName,
+                Notification.TYPE_EVENT_REMINDER,
+                "⏰ Event Reminder",
+                "Don't forget! " + eventName + " is happening soon. We're looking forward to seeing you!",
+                (successCount, failureCount) -> {
+                    runOnUiThread(() -> {
+                        Toast.makeText(this,
+                                "Sent reminders to " + successCount + " attendees",
+                                Toast.LENGTH_SHORT).show();
+                    });
+                }
+        );
+    }
+
     private void showCancelEventDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("Cancel Event")

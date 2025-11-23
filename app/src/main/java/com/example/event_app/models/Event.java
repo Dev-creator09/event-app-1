@@ -25,6 +25,7 @@ public class Event {
     private long createdAt;
     private String posterUrl;
     private String location;
+    private String category;         // Event category: "Food", "Sports", "Music", "Education", "Art", "Technology", "Health", "Other"
 
     // Registration and Capacity
     private Long capacity;
@@ -76,6 +77,7 @@ public class Event {
     public long getCreatedAt() { return createdAt; }
     public String getPosterUrl() { return posterUrl; }
     public String getLocation() { return location; }
+    public String getCategory() { return category; }
     public Long getCapacity() { return capacity; }
     public List<String> getWaitingList() { return waitingList; }
     public List<String> getSignedUpUsers() { return signedUpUsers; }
@@ -101,6 +103,7 @@ public class Event {
     public void setCreatedAt(long createdAt) { this.createdAt = createdAt; }
     public void setPosterUrl(String posterUrl) { this.posterUrl = posterUrl; }
     public void setLocation(String location) { this.location = location; }
+    public void setCategory(String category) { this.category = category; }
     public void setCapacity(Long capacity) { this.capacity = capacity; }
     public void setWaitingList(List<String> waitingList) { this.waitingList = waitingList; }
     public void setSignedUpUsers(List<String> signedUpUsers) { this.signedUpUsers = signedUpUsers; }

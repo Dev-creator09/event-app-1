@@ -57,7 +57,7 @@ public class CreateEventActivity extends AppCompatActivity {
     // UI Elements
     private TextInputEditText editEventName, editDescription, editLocation, editCapacity;
     private MaterialButton btnSelectPoster, btnSelectEventDate, btnSelectRegStart, btnSelectRegEnd;
-    private MaterialButton btnCreateEvent, btnPreview;
+    private MaterialButton btnCreateEvent, btnPreview, btnSelectCategory;
     private SwitchMaterial switchGeolocation;
     private ImageView ivPosterPreview;
     private View loadingView, emptyPosterView;
@@ -71,6 +71,7 @@ public class CreateEventActivity extends AppCompatActivity {
     private Uri posterUri;
     private Date eventDate, regStartDate, regEndDate;
     private boolean geolocationEnabled = false;
+    private String selectedCategory = "Other"; // Default category
 
     // Image picker launcher
     private final ActivityResultLauncher<Intent> imagePickerLauncher =
@@ -109,6 +110,7 @@ public class CreateEventActivity extends AppCompatActivity {
         btnSelectRegEnd = findViewById(R.id.btnSelectRegEnd);
         btnCreateEvent = findViewById(R.id.btnCreateEvent);
         btnPreview = findViewById(R.id.btnPreview);
+        btnSelectCategory = findViewById(R.id.btnSelectCategory);
 
         // Switch
         switchGeolocation = findViewById(R.id.switchGeolocation);
@@ -126,6 +128,7 @@ public class CreateEventActivity extends AppCompatActivity {
         btnSelectRegEnd.setOnClickListener(v -> selectRegistrationEnd());
         btnCreateEvent.setOnClickListener(v -> createEvent());
         btnPreview.setOnClickListener(v -> showPreview());
+        btnSelectCategory.setOnClickListener(v -> showCategoryDialog());
 
         // Geolocation switch listener
         switchGeolocation.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -149,6 +152,43 @@ public class CreateEventActivity extends AppCompatActivity {
                 .centerCrop()
                 .into(ivPosterPreview);
         btnSelectPoster.setText("Change Poster");
+    }
+
+    /**
+     * Show category selection dialog
+     */
+    private void showCategoryDialog() {
+        String[] categories = {
+                "Food & Dining",
+                "Sports & Fitness",
+                "Music & Entertainment",
+                "Education & Learning",
+                "Art & Culture",
+                "Technology",
+                "Health & Wellness",
+                "Business & Networking",
+                "Community & Social",
+                "Other"
+        };
+
+        // Find currently selected index
+        int selectedIndex = 9; // Default to "Other"
+        for (int i = 0; i < categories.length; i++) {
+            if (categories[i].equals(selectedCategory)) {
+                selectedIndex = i;
+                break;
+            }
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Select Event Category")
+                .setSingleChoiceItems(categories, selectedIndex, (dialog, which) -> {
+                    selectedCategory = categories[which];
+                    btnSelectCategory.setText(selectedCategory);
+                    dialog.dismiss();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     /**
@@ -220,10 +260,11 @@ public class CreateEventActivity extends AppCompatActivity {
 
         // Build preview message
         StringBuilder preview = new StringBuilder();
-        preview.append("📋 Event Preview\n\n");
+        preview.append("ðŸ“‹ Event Preview\n\n");
 
         preview.append("Name: ").append(name.isEmpty() ? "Not set" : name).append("\n\n");
         preview.append("Description: ").append(description.isEmpty() ? "Not set" : description).append("\n\n");
+        preview.append("Category: ").append(selectedCategory).append("\n\n");
         preview.append("Location: ").append(location.isEmpty() ? "Not set" : location).append("\n\n");
 
         if (!capacityStr.isEmpty()) {
@@ -239,8 +280,8 @@ public class CreateEventActivity extends AppCompatActivity {
             preview.append("Date: Not set\n\n");
         }
 
-        preview.append("Poster: ").append(posterUri != null ? "Selected ✓" : "Not selected").append("\n\n");
-        preview.append("Geolocation: ").append(geolocationEnabled ? "Enabled ✓" : "Disabled").append("\n");
+        preview.append("Poster: ").append(posterUri != null ? "Selected âœ“" : "Not selected").append("\n\n");
+        preview.append("Geolocation: ").append(geolocationEnabled ? "Enabled âœ“" : "Disabled").append("\n");
 
         new AlertDialog.Builder(this)
                 .setTitle("Event Preview")
@@ -286,6 +327,7 @@ public class CreateEventActivity extends AppCompatActivity {
         // Create event object
         Event event = new Event(eventId, name, description, mAuth.getCurrentUser().getUid());
         event.setLocation(location);
+        event.setCategory(selectedCategory); // Set the selected category
         event.setCapacity(capacity);
         event.setEventDate(eventDate);
         event.setRegistrationStartDate(regStartDate);
@@ -368,13 +410,13 @@ public class CreateEventActivity extends AppCompatActivity {
         db.collection("events").document(eventId)
                 .set(event)
                 .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "✅ Event created successfully");
+                    Log.d(TAG, "âœ… Event created successfully");
 
                     // Generate and upload QR code
                     generateAndUploadQRCode(eventId);
                 })
                 .addOnFailureListener(e -> {
-                    Log.e(TAG, "❌ Error creating event", e);
+                    Log.e(TAG, "âŒ Error creating event", e);
                     hideLoading();
                     Toast.makeText(this, "Failed to create event", Toast.LENGTH_SHORT).show();
                 });
@@ -411,12 +453,12 @@ public class CreateEventActivity extends AppCompatActivity {
 
             qrRef.putBytes(data)
                     .addOnSuccessListener(taskSnapshot -> {
-                        Log.d(TAG, "✅ QR code uploaded");
+                        Log.d(TAG, "âœ… QR code uploaded");
                         hideLoading();
                         showSuccessAndNavigate();
                     })
                     .addOnFailureListener(e -> {
-                        Log.e(TAG, "❌ Error uploading QR code", e);
+                        Log.e(TAG, "âŒ Error uploading QR code", e);
                         hideLoading();
                         // Still show success even if QR upload fails
                         showSuccessAndNavigate();
@@ -430,7 +472,7 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     private void showSuccessAndNavigate() {
-        Toast.makeText(this, "Event created successfully! 🎉", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Event created successfully! ðŸŽ‰", Toast.LENGTH_LONG).show();
 
         // Go back to main activity
         Intent intent = new Intent(this, MainActivity.class);

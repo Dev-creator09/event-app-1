@@ -56,5 +56,10 @@
         <activity android:name=".admin.AdminBrowseImagesActivity" />
         <activity android:name=".admin.AdminEventDetailsActivity" />
 
+        <activity
+            android:name=".activities.entrant.NotificationsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+
     </application>
 </manifest>

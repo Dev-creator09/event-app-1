@@ -25,7 +25,6 @@
             android:text="Loading event..."
             android:textColor="#5E5E5E"
             android:layout_marginTop="16dp"/>
-
     </LinearLayout>
 
     <!-- Error View -->
@@ -63,7 +62,6 @@
             android:textColor="#FFFFFF"
             app:backgroundTint="#000000"
             app:cornerRadius="8dp"/>
-
     </LinearLayout>
 
     <!-- Main Content -->
@@ -92,7 +90,6 @@
                     android:scaleType="centerCrop"
                     android:background="#F5F5F5"
                     android:contentDescription="Event poster"/>
-
             </androidx.cardview.widget.CardView>
 
             <!-- Event Details -->
@@ -136,7 +133,6 @@
                         android:textColor="#000000"
                         android:textSize="16sp"
                         android:fontFamily="sans-serif-medium"/>
-
                 </LinearLayout>
 
                 <!-- Info Cards -->
@@ -187,11 +183,8 @@
                                 android:textSize="16sp"
                                 android:fontFamily="sans-serif-medium"
                                 android:layout_marginTop="4dp"/>
-
                         </LinearLayout>
-
                     </LinearLayout>
-
                 </com.google.android.material.card.MaterialCardView>
 
                 <!-- Location Card -->
@@ -244,7 +237,6 @@
                                 android:textSize="16sp"
                                 android:fontFamily="sans-serif-medium"
                                 android:layout_marginTop="4dp"/>
-
                         </LinearLayout>
 
                         <ImageView
@@ -252,9 +244,7 @@
                             android:layout_height="20dp"
                             android:src="@android:drawable/ic_menu_directions"
                             app:tint="#5E5E5E"/>
-
                     </LinearLayout>
-
                 </com.google.android.material.card.MaterialCardView>
 
                 <!-- Capacity Card -->
@@ -304,11 +294,8 @@
                                 android:textColor="#5E5E5E"
                                 android:textSize="14sp"
                                 android:layout_marginTop="4dp"/>
-
                         </LinearLayout>
-
                     </LinearLayout>
-
                 </com.google.android.material.card.MaterialCardView>
 
                 <!-- Description Section -->
@@ -330,14 +317,11 @@
                     android:textSize="16sp"
                     android:lineSpacingExtra="4dp"
                     android:layout_marginBottom="80dp"/>
-
             </LinearLayout>
-
         </LinearLayout>
-
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Back Button (Top Left) -->
+    <!-- Back Button -->
     <ImageButton
         android:id="@+id/btnBack"
         android:layout_width="48dp"
@@ -349,7 +333,7 @@
         app:tint="#FFFFFF"
         android:elevation="4dp"/>
 
-    <!-- Action Buttons (Bottom) -->
+    <!-- Bottom Actions -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -364,7 +348,7 @@
             android:padding="16dp"
             android:background="#FFFFFF">
 
-            <!-- Join Waiting List Button -->
+            <!-- Join Waiting List -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnJoinWaitingList"
                 android:layout_width="match_parent"
@@ -379,7 +363,7 @@
                 app:icon="@android:drawable/ic_input_add"
                 app:iconTint="#FFFFFF"/>
 
-            <!-- Leave Waiting List Button -->
+            <!-- Leave Waiting List -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnLeaveWaitingList"
                 android:layout_width="match_parent"
@@ -395,8 +379,79 @@
                 app:cornerRadius="8dp"
                 android:visibility="gone"/>
 
-        </LinearLayout>
+            <!-- 🔥 Invitation Card (added here) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardInvitation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:visibility="gone"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:strokeColor="#2196F3"
+                app:strokeWidth="2dp">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/tvInvitationStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="🎉 You've been selected! Accept or decline your invitation:"
+                        android:textColor="#000000"
+                        android:textSize="16sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:layout_marginBottom="16dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <!-- Accept -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAcceptInvitation"
+                            android:layout_width="0dp"
+                            android:layout_height="56dp"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="8dp"
+                            android:text="✅ Accept"
+                            android:textColor="#FFFFFF"
+                            android:textSize="16sp"
+                            android:textAllCaps="false"
+                            android:fontFamily="sans-serif-medium"
+                            app:backgroundTint="#4CAF50"
+                            app:cornerRadius="8dp"
+                            app:icon="@android:drawable/ic_input_add"
+                            app:iconTint="#FFFFFF"
+                            app:iconGravity="start"/>
+
+                        <!-- Decline -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnDeclineInvitation"
+                            android:layout_width="0dp"
+                            android:layout_height="56dp"
+                            android:layout_weight="1"
+                            android:layout_marginStart="8dp"
+                            android:text="❌ Decline"
+                            android:textColor="#FFFFFF"
+                            android:textSize="16sp"
+                            android:textAllCaps="false"
+                            android:fontFamily="sans-serif-medium"
+                            app:backgroundTint="#F44336"
+                            app:cornerRadius="8dp"
+                            app:icon="@android:drawable/ic_menu_close_clear_cancel"
+                            app:iconTint="#FFFFFF"
+                            app:iconGravity="start"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

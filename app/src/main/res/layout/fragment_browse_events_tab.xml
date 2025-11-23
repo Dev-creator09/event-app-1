@@ -84,25 +84,11 @@
                     android:checked="true"/>
 
                 <com.google.android.material.chip.Chip
-                    android:id="@+id/chipThisWeek"
+                    android:id="@+id/chipFood"
                     style="@style/Widget.Material3.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="This Week"/>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipThisMonth"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="This Month"/>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipMusic"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Music"/>
+                    android:text="Food"/>
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipSports"
@@ -112,6 +98,20 @@
                     android:text="Sports"/>
 
                 <com.google.android.material.chip.Chip
+                    android:id="@+id/chipMusic"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Music"/>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipEducation"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Education"/>
+
+                <com.google.android.material.chip.Chip
                     android:id="@+id/chipArt"
                     style="@style/Widget.Material3.Chip.Filter"
                     android:layout_width="wrap_content"
@@ -119,18 +119,39 @@
                     android:text="Art"/>
 
                 <com.google.android.material.chip.Chip
-                    android:id="@+id/chipFood"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Food"/>
-
-                <com.google.android.material.chip.Chip
                     android:id="@+id/chipTech"
                     style="@style/Widget.Material3.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Tech"/>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipHealth"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Health"/>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipBusiness"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Business"/>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipCommunity"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Community"/>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipOther"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Other"/>
 
             </com.google.android.material.chip.ChipGroup>
 
@@ -159,7 +180,7 @@
                 android:id="@+id/btnSort"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sort: Date ▼"
+                android:text="Sort: Date â–¼"
                 android:textColor="#000000"
                 android:textSize="14sp"
                 android:fontFamily="sans-serif-medium"
@@ -200,7 +221,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="📅"
+                android:text="ðŸ“…"
                 android:textSize="64sp"
                 android:layout_marginBottom="16dp"/>
 
@@ -230,7 +251,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="⚠️"
+                android:text="âš ï¸"
                 android:textSize="64sp"
                 android:layout_marginBottom="16dp"/>
 

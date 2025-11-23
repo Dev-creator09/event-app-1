@@ -57,8 +57,8 @@ public class BrowseEventsTabFragment extends Fragment {
     private EditText searchBox;
     private ImageButton btnClearSearch;
     private ChipGroup chipGroupFilters;
-    private Chip chipAll, chipThisWeek, chipThisMonth;
-    private Chip chipMusic, chipSports, chipArt, chipFood, chipTech;
+    private Chip chipAll;
+    private Chip chipFood, chipSports, chipMusic, chipEducation, chipArt, chipTech, chipHealth, chipBusiness, chipCommunity, chipOther;
     private TextView tvResultsCount, btnSort;
     private RecyclerView rvEvents;
     private ProgressBar progressBar;
@@ -71,7 +71,6 @@ public class BrowseEventsTabFragment extends Fragment {
     private FirebaseFirestore db;
     private List<Event> allEvents;
     private String currentSearchQuery = "";
-    private String currentTimeFilter = "all";
     private String currentCategoryFilter = "all";
     private SortOption currentSort = SortOption.DATE_ASC;
 
@@ -119,13 +118,16 @@ public class BrowseEventsTabFragment extends Fragment {
         btnClearSearch = view.findViewById(R.id.btnClearSearch);
         chipGroupFilters = view.findViewById(R.id.chipGroupFilters);
         chipAll = view.findViewById(R.id.chipAll);
-        chipThisWeek = view.findViewById(R.id.chipThisWeek);
-        chipThisMonth = view.findViewById(R.id.chipThisMonth);
-        chipMusic = view.findViewById(R.id.chipMusic);
-        chipSports = view.findViewById(R.id.chipSports);
-        chipArt = view.findViewById(R.id.chipArt);
         chipFood = view.findViewById(R.id.chipFood);
+        chipSports = view.findViewById(R.id.chipSports);
+        chipMusic = view.findViewById(R.id.chipMusic);
+        chipEducation = view.findViewById(R.id.chipEducation);
+        chipArt = view.findViewById(R.id.chipArt);
         chipTech = view.findViewById(R.id.chipTech);
+        chipHealth = view.findViewById(R.id.chipHealth);
+        chipBusiness = view.findViewById(R.id.chipBusiness);
+        chipCommunity = view.findViewById(R.id.chipCommunity);
+        chipOther = view.findViewById(R.id.chipOther);
         tvResultsCount = view.findViewById(R.id.tvResultsCount);
         btnSort = view.findViewById(R.id.btnSort);
         rvEvents = view.findViewById(R.id.rvEvents);
@@ -173,29 +175,27 @@ public class BrowseEventsTabFragment extends Fragment {
             int checkedId = checkedIds.get(0);
 
             if (checkedId == R.id.chipAll) {
-                currentTimeFilter = "all";
                 currentCategoryFilter = "all";
-            } else if (checkedId == R.id.chipThisWeek) {
-                currentTimeFilter = "week";
-                currentCategoryFilter = "all";
-            } else if (checkedId == R.id.chipThisMonth) {
-                currentTimeFilter = "month";
-                currentCategoryFilter = "all";
-            } else if (checkedId == R.id.chipMusic) {
-                currentTimeFilter = "all";
-                currentCategoryFilter = "music";
-            } else if (checkedId == R.id.chipSports) {
-                currentTimeFilter = "all";
-                currentCategoryFilter = "sports";
-            } else if (checkedId == R.id.chipArt) {
-                currentTimeFilter = "all";
-                currentCategoryFilter = "art";
             } else if (checkedId == R.id.chipFood) {
-                currentTimeFilter = "all";
-                currentCategoryFilter = "food";
+                currentCategoryFilter = "Food & Dining";
+            } else if (checkedId == R.id.chipSports) {
+                currentCategoryFilter = "Sports & Fitness";
+            } else if (checkedId == R.id.chipMusic) {
+                currentCategoryFilter = "Music & Entertainment";
+            } else if (checkedId == R.id.chipEducation) {
+                currentCategoryFilter = "Education & Learning";
+            } else if (checkedId == R.id.chipArt) {
+                currentCategoryFilter = "Art & Culture";
             } else if (checkedId == R.id.chipTech) {
-                currentTimeFilter = "all";
-                currentCategoryFilter = "tech";
+                currentCategoryFilter = "Technology";
+            } else if (checkedId == R.id.chipHealth) {
+                currentCategoryFilter = "Health & Wellness";
+            } else if (checkedId == R.id.chipBusiness) {
+                currentCategoryFilter = "Business & Networking";
+            } else if (checkedId == R.id.chipCommunity) {
+                currentCategoryFilter = "Community & Social";
+            } else if (checkedId == R.id.chipOther) {
+                currentCategoryFilter = "Other";
             }
 
             applyFiltersAndSort();
@@ -235,11 +235,6 @@ public class BrowseEventsTabFragment extends Fragment {
         // Search filter
         if (!currentSearchQuery.isEmpty()) {
             filtered = filterBySearch(filtered, currentSearchQuery);
-        }
-
-        // Time filter
-        if (!currentTimeFilter.equals("all")) {
-            filtered = filterByTime(filtered, currentTimeFilter);
         }
 
         // Category filter
@@ -310,34 +305,10 @@ public class BrowseEventsTabFragment extends Fragment {
         List<Event> result = new ArrayList<>();
 
         for (Event event : events) {
-            String name = event.getName() != null ? event.getName().toLowerCase() : "";
-            String desc = event.getDescription() != null ? event.getDescription().toLowerCase() : "";
+            String eventCategory = event.getCategory();
 
-            boolean matches = false;
-            switch (category) {
-                case "music":
-                    matches = name.contains("music") || name.contains("concert") ||
-                            desc.contains("music") || desc.contains("concert");
-                    break;
-                case "sports":
-                    matches = name.contains("sport") || name.contains("game") ||
-                            name.contains("match") || desc.contains("sport");
-                    break;
-                case "art":
-                    matches = name.contains("art") || name.contains("paint") ||
-                            name.contains("draw") || desc.contains("art");
-                    break;
-                case "food":
-                    matches = name.contains("food") || name.contains("cook") ||
-                            desc.contains("food") || desc.contains("restaurant");
-                    break;
-                case "tech":
-                    matches = name.contains("tech") || name.contains("coding") ||
-                            desc.contains("tech") || desc.contains("software");
-                    break;
-            }
-
-            if (matches) {
+            // Match the category exactly
+            if (eventCategory != null && eventCategory.equals(category)) {
                 result.add(event);
             }
         }
@@ -412,7 +383,7 @@ public class BrowseEventsTabFragment extends Fragment {
                 .setTitle("Sort Events")
                 .setSingleChoiceItems(options, currentIndex, (dialog, which) -> {
                     currentSort = SortOption.values()[which];
-                    btnSort.setText("Sort: " + getSortShortName(currentSort) + " ▼");
+                    btnSort.setText("Sort: " + getSortShortName(currentSort) + " â–¼");
                     applyFiltersAndSort();
                     dialog.dismiss();
                 })
@@ -438,9 +409,6 @@ public class BrowseEventsTabFragment extends Fragment {
     private String getEmptyMessage() {
         if (!currentSearchQuery.isEmpty()) {
             return "No events match \"" + currentSearchQuery + "\"";
-        }
-        if (!currentTimeFilter.equals("all")) {
-            return "No events " + (currentTimeFilter.equals("week") ? "this week" : "this month");
         }
         if (!currentCategoryFilter.equals("all")) {
             return "No " + currentCategoryFilter + " events found";
