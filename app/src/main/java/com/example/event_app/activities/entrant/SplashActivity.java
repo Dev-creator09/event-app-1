@@ -14,13 +14,14 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.event_app.R;
+import com.example.event_app.activities.admin.AdminHomeActivity;
 import com.example.event_app.activities.shared.ProfileSetupActivity;
-import com.example.event_app.admin.AdminHomeActivity;
 import com.example.event_app.models.User;
-import com.example.event_app.utils.UserRole;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.event_app.activities.admin.AdminHomeActivity;
+
 
 /**
  * SplashActivity - Uber-Inspired Minimal Launch Screen

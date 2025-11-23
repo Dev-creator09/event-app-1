@@ -211,6 +211,55 @@
 
             </LinearLayout>
 
+            <!-- ✨ Admin Section -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E0E0E0"
+                android:layout_marginBottom="24dp"/>
+
+            <LinearLayout
+                android:id="@+id/adminSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🔐 Admin Access"
+                    android:textColor="#000000"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:id="@+id/tvAdminStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🔒 Admin access locked"
+                    android:textColor="#5E5E5E"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="16dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnUnlockAdmin"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="🔓 Unlock Admin Access"
+                    android:textColor="#000000"
+                    android:textSize="16sp"
+                    android:textAllCaps="false"
+                    android:fontFamily="sans-serif-medium"
+                    app:backgroundTint="#FFF9C4"
+                    app:strokeColor="#FBC02D"
+                    app:strokeWidth="2dp"
+                    app:cornerRadius="8dp"
+                    android:layout_marginBottom="32dp"/>
+
+            </LinearLayout>
+
             <!-- Become Organizer Section -->
             <View
                 android:layout_width="match_parent"
@@ -259,6 +308,52 @@
 
             </LinearLayout>
 
+            <!-- App Info Section (for Easter Egg) -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E0E0E0"
+                android:layout_marginBottom="24dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="About"
+                android:textColor="#000000"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- ✨ App Version (Tap 7 times for admin unlock) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="32dp"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackground">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="App Version"
+                    android:textColor="#000000"
+                    android:textSize="16sp"/>
+
+                <TextView
+                    android:id="@+id/tvAppVersion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1.0.0"
+                    android:textColor="#5E5E5E"
+                    android:textSize="16sp"
+                    android:clickable="true"
+                    android:focusable="true"/>
+
+            </LinearLayout>
+
             <!-- Danger Zone -->
             <View
                 android:layout_width="match_parent"
@@ -287,7 +382,8 @@
                 app:backgroundTint="#FFEBEE"
                 app:strokeColor="#D32F2F"
                 app:strokeWidth="1dp"
-                app:cornerRadius="8dp"/>
+                app:cornerRadius="8dp"
+                android:layout_marginBottom="16dp"/>
 
         </LinearLayout>
 

@@ -1,20 +1,23 @@
-package com.example.event_app.admin;
+package com.example.event_app.activities.admin;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.event_app.R;
+import com.example.event_app.activities.entrant.MainActivity;
 import com.example.event_app.models.Event;
 import com.example.event_app.models.User;
 import com.example.event_app.utils.ReportExporter;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -22,45 +25,52 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * AdminHomeActivity - Main dashboard for administrators
- * Shows platform statistics and provides quick actions
+ * AdminHomeActivity - Admin dashboard with moderation tools and statistics
+ *
+ * Features:
+ * - Platform statistics (events, users, organizers)
+ * - Browse/manage events, users, images
+ * - Generate platform reports
+ * - Switch back to entrant/organizer view
+ * - Flagged content monitoring
+ *
+ * US 03.04.01: Browse events
+ * US 03.05.01: Browse profiles
+ * US 03.06.01: Browse images
+ * US 03.13.01: Export platform usage reports
  */
 public class AdminHomeActivity extends AppCompatActivity {
 
     private static final String TAG = "AdminHomeActivity";
 
     // UI Components - Statistics
-    private TextView tvEventsCount;
-    private TextView tvUsersCount;
-    private TextView tvOrganizersCount;
-    private TextView tvActiveCount;
+    private TextView tvEventsCount, tvUsersCount, tvOrganizersCount, tvActiveCount;
+
+    // UI Components - Cards
+    private MaterialCardView cardBrowseEvents, cardBrowseUsers, cardBrowseImages;
 
     // UI Components - Buttons
-    private Button btnBrowseEvents;
-    private Button btnBrowseUsers;
-    private Button btnBrowseImages;
-    private Button btnGenerateReports;
-    private Button btnFlaggedItems;
-
-    private LinearLayout layoutFlaggedEvents;
+    private MaterialButton btnGenerateReports, btnFlaggedItems, btnSwitchToUserMode;
+    private View layoutFlaggedSection;
 
     // Firebase
+    private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+    private User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_home);
 
-        // Set title using existing action bar
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Admin Dashboard");
-        }
-
         Log.d(TAG, "AdminHomeActivity created");
 
         // Initialize Firebase
+        mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+
+        // Check admin access first
+        checkAdminAccess();
 
         // Initialize views
         initViews();
@@ -79,62 +89,115 @@ public class AdminHomeActivity extends AppCompatActivity {
      * Initialize all view components
      */
     private void initViews() {
+        // Back button
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+
         // Statistics TextViews
         tvEventsCount = findViewById(R.id.tvEventsCount);
         tvUsersCount = findViewById(R.id.tvUsersCount);
         tvOrganizersCount = findViewById(R.id.tvOrganizersCount);
         tvActiveCount = findViewById(R.id.tvActiveCount);
 
-        // Action Buttons
-        btnBrowseEvents = findViewById(R.id.btnBrowseEvents);
-        btnBrowseUsers = findViewById(R.id.btnBrowseUsers);
-        btnBrowseImages = findViewById(R.id.btnBrowseImages);
+        // Action Cards
+        cardBrowseEvents = findViewById(R.id.cardBrowseEvents);
+        cardBrowseUsers = findViewById(R.id.cardBrowseUsers);
+        cardBrowseImages = findViewById(R.id.cardBrowseImages);
+
+        // Buttons
         btnGenerateReports = findViewById(R.id.btnGenerateReports);
         btnFlaggedItems = findViewById(R.id.btnFlaggedItems);
+        btnSwitchToUserMode = findViewById(R.id.btnSwitchToUserMode);
 
-        layoutFlaggedEvents = findViewById(R.id.layoutFlaggedEvents);
+        // Flagged section
+        layoutFlaggedSection = findViewById(R.id.layoutFlaggedSection);
     }
 
     /**
-     * Setup click listeners for all buttons
+     * Setup click listeners for all buttons and cards
      */
     private void setupButtonListeners() {
-        // Browse Events
-        btnBrowseEvents.setOnClickListener(v -> {
+        // Browse Events Card
+        cardBrowseEvents.setOnClickListener(v -> {
             Log.d(TAG, "Browse Events clicked");
             Intent intent = new Intent(this, AdminBrowseEventsActivity.class);
             startActivity(intent);
         });
 
-        // Browse Users
-        btnBrowseUsers.setOnClickListener(v -> {
+        // Browse Users Card
+        cardBrowseUsers.setOnClickListener(v -> {
             Log.d(TAG, "Browse Users clicked");
             Intent intent = new Intent(this, AdminBrowseUsersActivity.class);
             startActivity(intent);
         });
 
-        // Browse Images
-        btnBrowseImages.setOnClickListener(v -> {
+        // Browse Images Card
+        cardBrowseImages.setOnClickListener(v -> {
             Log.d(TAG, "Browse Images clicked");
             Intent intent = new Intent(this, AdminBrowseImagesActivity.class);
             startActivity(intent);
         });
 
-        // Generate Reports
-        btnGenerateReports.setOnClickListener(v -> {
-            Log.d(TAG, "Generate Reports clicked");
-            generateAndExportReport();
-        });
+        // Generate Reports Button
+        if (btnGenerateReports != null) {
+            btnGenerateReports.setOnClickListener(v -> {
+                Log.d(TAG, "Generate Reports clicked");
+                generateAndExportReport();
+            });
+        }
 
-        // Flagged Items
-        btnFlaggedItems.setOnClickListener(v -> {
-            Log.d(TAG, "Flagged Items clicked");
-            Toast.makeText(this, "Showing flagged events", Toast.LENGTH_SHORT).show();
-            // Open browse events filtered to flagged items
-            Intent intent = new Intent(this, AdminBrowseEventsActivity.class);
-            intent.putExtra("showFlaggedOnly", true);
-            startActivity(intent);
-        });
+        // Flagged Items Button
+        if (btnFlaggedItems != null) {
+            btnFlaggedItems.setOnClickListener(v -> {
+                Log.d(TAG, "Flagged Items clicked");
+                Toast.makeText(this, "Showing flagged events", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, AdminBrowseEventsActivity.class);
+                intent.putExtra("showFlaggedOnly", true);
+                startActivity(intent);
+            });
+        }
+
+        // ✨ Switch to User Mode Button
+        if (btnSwitchToUserMode != null) {
+            btnSwitchToUserMode.setOnClickListener(v -> showRoleSwitchDialog());
+        }
+    }
+
+    /**
+     * Check if current user has admin privileges
+     */
+    private void checkAdminAccess() {
+        if (mAuth.getCurrentUser() == null) {
+            Toast.makeText(this, "Please sign in", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        String userId = mAuth.getCurrentUser().getUid();
+
+        db.collection("users").document(userId)
+                .get()
+                .addOnSuccessListener(document -> {
+                    if (document.exists()) {
+                        currentUser = document.toObject(User.class);
+
+                        if (currentUser == null || !currentUser.isAdmin()) {
+                            // Not an admin - deny access
+                            Toast.makeText(this, "⛔ Admin access required", Toast.LENGTH_LONG).show();
+                            Log.w(TAG, "Non-admin user attempted to access admin panel");
+                            finish();
+                        } else {
+                            Log.d(TAG, "✅ Admin access verified for user: " + userId);
+                        }
+                    } else {
+                        Toast.makeText(this, "User not found", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error checking admin access", e);
+                    Toast.makeText(this, "Error verifying access", Toast.LENGTH_SHORT).show();
+                    finish();
+                });
     }
 
     /**
@@ -217,20 +280,24 @@ public class AdminHomeActivity extends AppCompatActivity {
                     }
 
                     // Update button text with count
-                    btnFlaggedItems.setText("Flagged Items (" + flaggedCount + ")");
+                    if (btnFlaggedItems != null) {
+                        btnFlaggedItems.setText("View Flagged (" + flaggedCount + ")");
+                    }
 
                     Log.d(TAG, "Found " + flaggedCount + " flagged events");
 
                     // Show/hide flagged events section
-                    if (flaggedCount > 0 && layoutFlaggedEvents != null) {
-                        layoutFlaggedEvents.setVisibility(View.VISIBLE);
-                    } else if (layoutFlaggedEvents != null) {
-                        layoutFlaggedEvents.setVisibility(View.GONE);
+                    if (flaggedCount > 0 && layoutFlaggedSection != null) {
+                        layoutFlaggedSection.setVisibility(View.VISIBLE);
+                    } else if (layoutFlaggedSection != null) {
+                        layoutFlaggedSection.setVisibility(View.GONE);
                     }
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error loading flagged events", e);
-                    btnFlaggedItems.setText("Flagged Items (0)");
+                    if (btnFlaggedItems != null) {
+                        btnFlaggedItems.setText("View Flagged (0)");
+                    }
                 });
     }
 
@@ -240,7 +307,6 @@ public class AdminHomeActivity extends AppCompatActivity {
      */
     private void generateAndExportReport() {
         Toast.makeText(this, "Generating report...", Toast.LENGTH_SHORT).show();
-
         Log.d(TAG, "Starting report generation...");
 
         // Fetch all events
@@ -267,7 +333,7 @@ public class AdminHomeActivity extends AppCompatActivity {
 
                                 // Export report
                                 ReportExporter.exportPlatformReport(this, events, users);
-                                Toast.makeText(this, "Report generated!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, "✅ Report generated!", Toast.LENGTH_SHORT).show();
                             })
                             .addOnFailureListener(e -> {
                                 Log.e(TAG, "Error loading users for report", e);
@@ -283,15 +349,70 @@ public class AdminHomeActivity extends AppCompatActivity {
     }
 
     /**
+     * ✨ Show dialog to switch between admin and user views
+     */
+    private void showRoleSwitchDialog() {
+        if (currentUser == null) return;
+
+        // Build role options
+        StringBuilder roleMessage = new StringBuilder();
+        roleMessage.append("You have multiple roles. Switch to:\n\n");
+
+        boolean hasOtherRoles = false;
+
+        if (currentUser.isEntrant()) {
+            roleMessage.append("📱 Entrant View - Join events, manage waiting lists\n\n");
+            hasOtherRoles = true;
+        }
+
+        if (currentUser.isOrganizer()) {
+            roleMessage.append("🎯 Organizer View - Create and manage events\n\n");
+            hasOtherRoles = true;
+        }
+
+        if (!hasOtherRoles) {
+            Toast.makeText(this, "You only have admin role", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        roleMessage.append("You can return to Admin Panel anytime from the menu.");
+
+        new AlertDialog.Builder(this)
+                .setTitle("🔄 Switch View")
+                .setMessage(roleMessage.toString())
+                .setPositiveButton("Switch to User Mode", (dialog, which) -> switchToUserMode())
+                .setNegativeButton("Stay in Admin", null)
+                .show();
+    }
+
+    /**
+     * ✨ Switch to entrant/organizer view (MainActivity)
+     */
+    private void switchToUserMode() {
+        Log.d(TAG, "Switching from Admin to User mode");
+
+        // Go back to MainActivity (normal user interface)
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
+
+        Toast.makeText(this, "👤 Switched to User mode", Toast.LENGTH_SHORT).show();
+    }
+
+    /**
      * Reload statistics when activity resumes
      */
     @Override
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "Activity resumed, reloading statistics");
+
+        // Re-verify admin access
+        checkAdminAccess();
+
+        // Reload data
         loadStatistics();
         loadFlaggedEvents();
     }
 }
-
-//test

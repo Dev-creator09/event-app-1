@@ -50,11 +50,11 @@
 
 
         <!-- Admin Activities -->
-        <activity android:name=".admin.AdminHomeActivity" />
-        <activity android:name=".admin.AdminBrowseEventsActivity" />
-        <activity android:name=".admin.AdminBrowseUsersActivity" />
-        <activity android:name=".admin.AdminBrowseImagesActivity" />
-        <activity android:name=".admin.AdminEventDetailsActivity" />
+        <activity android:name=".activities.admin.AdminHomeActivity" />
+        <activity android:name=".activities.admin.AdminBrowseEventsActivity" />
+        <activity android:name=".activities.admin.AdminBrowseUsersActivity" />
+        <activity android:name=".activities.admin.AdminBrowseImagesActivity" />
+        <activity android:name=".activities.admin.AdminEventDetailsActivity" />
 
         <activity
             android:name=".activities.entrant.NotificationsActivity"

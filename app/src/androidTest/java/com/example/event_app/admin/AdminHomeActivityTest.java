@@ -1,18 +1,13 @@
 package com.example.event_app.admin;
 
-import android.content.Intent;
-
-import androidx.test.espresso.Espresso;
-import androidx.test.espresso.ViewInteraction;
-import androidx.test.espresso.assertion.ViewAssertions;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
-import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
 import com.example.event_app.R;
+import com.example.event_app.activities.admin.AdminBrowseEventsActivity;
 
 import org.junit.After;
 import org.junit.Before;
@@ -94,7 +89,7 @@ public class AdminHomeActivityTest {
                 .perform(click());
         
         // intent ver
-        intended(hasComponent("com.example.event_app.admin.AdminBrowseUsersActivity"));
+        intended(hasComponent("com.example.event_app.activities.admin.AdminBrowseUsersActivity"));
     }
 
     @Test
@@ -102,7 +97,7 @@ public class AdminHomeActivityTest {
         onView(withId(R.id.btnBrowseImages))
                 .check(matches(isDisplayed()))
                 .perform(click());
-        intended(hasComponent("com.example.event_app.admin.AdminBrowseImagesActivity"));
+        intended(hasComponent("com.example.event_app.activities.admin.AdminBrowseImagesActivity"));
     }
 
     @Test

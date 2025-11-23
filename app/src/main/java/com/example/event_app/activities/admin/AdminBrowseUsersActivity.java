@@ -1,4 +1,4 @@
-package com.example.event_app.admin;
+package com.example.event_app.activities.admin;
 
 import android.os.Bundle;
 import android.util.Log;

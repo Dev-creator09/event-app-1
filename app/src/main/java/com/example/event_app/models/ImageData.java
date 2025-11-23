@@ -12,6 +12,7 @@ public class ImageData {
     private String associatedWith;  // eventId or userId
     private String type;            // "event_poster" or "profile_picture"
     private long uploadedAt;
+    private String storagePath;     // ✨ Firebase Storage path (e.g., "event_posters/image.jpg")
 
     // Empty constructor for Firebase
     public ImageData() {
@@ -32,6 +33,7 @@ public class ImageData {
     public String getAssociatedWith() { return associatedWith; }
     public String getType() { return type; }
     public long getUploadedAt() { return uploadedAt; }
+    public String getStoragePath() { return storagePath; }
 
     // Setters
     public void setImageId(String imageId) { this.imageId = imageId; }
@@ -40,4 +42,10 @@ public class ImageData {
     public void setAssociatedWith(String associatedWith) { this.associatedWith = associatedWith; }
     public void setType(String type) { this.type = type; }
     public void setUploadedAt(long uploadedAt) { this.uploadedAt = uploadedAt; }
+    public void setStoragePath(String storagePath) { this.storagePath = storagePath; }
+
+    // ✨ Convenience method to get uploader ID (handles both field names)
+    public String getUploaderId() {
+        return uploadedBy;
+    }
 }

@@ -5,7 +5,10 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,21 +23,29 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
- * SettingsActivity - Edit profile and manage account
+ * SettingsActivity - Edit profile, manage account, and admin access
  *
- * US 01.02.02: Update profile information
- * US 01.02.04: Delete profile
- * US 01.04.03: Opt out of notifications
+ * Features:
+ * - US 01.02.02: Update profile information
+ * - US 01.02.04: Delete profile
+ * - US 01.04.03: Opt out of notifications
+ * - Admin code unlock (secret: CMPUT301Lucky_Spot)
  */
 public class SettingsActivity extends AppCompatActivity {
 
     private static final String TAG = "SettingsActivity";
+    private static final String ADMIN_SECRET_CODE = "CMPUT301Lucky_Spot"; // ✨ Secret code
 
-    // UI Elements
+    // UI Elements - Profile
     private TextInputEditText editName, editEmail, editPhone;
     private SwitchMaterial switchNotifications;
     private MaterialButton btnSave, btnBecomeOrganizer, btnDeleteAccount;
     private View loadingView, contentView, organizerSection;
+
+    // UI Elements - Admin
+    private MaterialButton btnUnlockAdmin;
+    private TextView tvAdminStatus;
+    private View adminSection;
 
     // Firebase
     private FirebaseAuth mAuth;
@@ -44,6 +55,10 @@ public class SettingsActivity extends AppCompatActivity {
     private String userId;
     private User currentUser;
 
+    // Tap counter for hidden admin unlock (like Android Developer Options)
+    private int tapCount = 0;
+    private long lastTapTime = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +67,14 @@ public class SettingsActivity extends AppCompatActivity {
         // Initialize Firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
-        userId = mAuth.getCurrentUser().getUid();
+
+        if (mAuth.getCurrentUser() != null) {
+            userId = mAuth.getCurrentUser().getUid();
+        } else {
+            Toast.makeText(this, "Not logged in", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         // Initialize views
         initViews();
@@ -62,7 +84,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        // Views
+        // Profile views
         editName = findViewById(R.id.editName);
         editEmail = findViewById(R.id.editEmail);
         editPhone = findViewById(R.id.editPhone);
@@ -74,11 +96,34 @@ public class SettingsActivity extends AppCompatActivity {
         contentView = findViewById(R.id.contentView);
         organizerSection = findViewById(R.id.organizerSection);
 
+        // Admin views
+        adminSection = findViewById(R.id.adminSection);
+        tvAdminStatus = findViewById(R.id.tvAdminStatus);
+        btnUnlockAdmin = findViewById(R.id.btnUnlockAdmin);
+
         // Button listeners
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
         btnSave.setOnClickListener(v -> saveProfile());
         btnBecomeOrganizer.setOnClickListener(v -> showBecomeOrganizerDialog());
         btnDeleteAccount.setOnClickListener(v -> showDeleteAccountDialog());
+
+        // Admin unlock button
+        if (btnUnlockAdmin != null) {
+            btnUnlockAdmin.setOnClickListener(v -> showAdminCodeDialog());
+        }
+
+        // Hidden admin unlock - tap app version 7 times
+        TextView tvAppVersion = findViewById(R.id.tvAppVersion);
+        if (tvAppVersion != null) {
+            tvAppVersion.setOnClickListener(v -> handleVersionTap());
+        }
+
+        // Notification toggle listener
+        switchNotifications.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (currentUser != null) {
+                updateNotificationPreference(isChecked);
+            }
+        });
     }
 
     private void loadUserProfile() {
@@ -103,14 +148,141 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void displayUserData() {
-        // Display user info
+        // Display profile info
         editName.setText(currentUser.getName());
         editEmail.setText(currentUser.getEmail());
         editPhone.setText(currentUser.getPhoneNumber());
         switchNotifications.setChecked(currentUser.isNotificationsEnabled());
 
-        // Hide "Become Organizer" section - feature removed
+        // Hide "Become Organizer" section if already organizer
         organizerSection.setVisibility(View.GONE);
+
+        // Update admin UI
+        updateAdminUI();
+    }
+
+    /**
+     * ✨ Update admin section visibility and status
+     */
+    private void updateAdminUI() {
+        if (adminSection == null || currentUser == null) return;
+
+        if (currentUser.isAdmin()) {
+            // User is already admin
+            adminSection.setVisibility(View.VISIBLE);
+            tvAdminStatus.setText("✅ Admin privileges active");
+            tvAdminStatus.setTextColor(getColor(android.R.color.holo_green_dark));
+            btnUnlockAdmin.setVisibility(View.GONE);
+        } else {
+            // User is not admin - show unlock option
+            adminSection.setVisibility(View.VISIBLE);
+            tvAdminStatus.setText("🔒 Admin access locked");
+            tvAdminStatus.setTextColor(getColor(android.R.color.darker_gray));
+            btnUnlockAdmin.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /**
+     * ✨ Hidden admin unlock - tap version 7 times rapidly
+     */
+    private void handleVersionTap() {
+        long currentTime = System.currentTimeMillis();
+
+        // Reset if taps are too slow (more than 1 second apart)
+        if (currentTime - lastTapTime > 1000) {
+            tapCount = 0;
+        }
+
+        lastTapTime = currentTime;
+        tapCount++;
+
+        if (tapCount >= 7) {
+            tapCount = 0;
+            showAdminCodeDialog();
+            Toast.makeText(this, "Developer mode activated! 🔓", Toast.LENGTH_SHORT).show();
+        } else if (tapCount >= 4) {
+            Toast.makeText(this, (7 - tapCount) + " more taps to unlock admin", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * ✨ Show admin code entry dialog
+     */
+    private void showAdminCodeDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_admin_code, null);
+        EditText etAdminCode = dialogView.findViewById(R.id.etAdminCode);
+
+        new AlertDialog.Builder(this)
+                .setTitle("🔐 Enter Admin Code")
+                .setView(dialogView)
+                .setPositiveButton("Unlock", (dialog, which) -> {
+                    String enteredCode = etAdminCode.getText().toString().trim();
+                    verifyAdminCode(enteredCode);
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    /**
+     * ✨ Verify admin code and grant access
+     */
+    private void verifyAdminCode(String enteredCode) {
+        if (enteredCode.equals(ADMIN_SECRET_CODE)) {
+            // Correct code - grant admin privileges
+            grantAdminAccess();
+        } else {
+            // Wrong code
+            Toast.makeText(this, "❌ Invalid admin code", Toast.LENGTH_SHORT).show();
+            Log.w(TAG, "Failed admin unlock attempt with code: " + enteredCode);
+        }
+    }
+
+    /**
+     * ✨ Grant admin access to current user
+     */
+    private void grantAdminAccess() {
+        if (currentUser == null || mAuth.getCurrentUser() == null) return;
+
+        btnUnlockAdmin.setEnabled(false);
+
+        // Add admin role
+        currentUser.addRole("admin");
+        currentUser.setUpdatedAt(System.currentTimeMillis());
+
+        // Update in Firebase
+        db.collection("users").document(userId)
+                .set(currentUser)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "✅ Admin access granted to user: " + userId);
+                    Toast.makeText(this, "🎉 Admin access granted!", Toast.LENGTH_LONG).show();
+
+                    // Update UI
+                    updateAdminUI();
+
+                    // Show success message
+                    showAdminWelcomeMessage();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "❌ Failed to grant admin access", e);
+                    Toast.makeText(this, "Error granting admin access", Toast.LENGTH_SHORT).show();
+                    btnUnlockAdmin.setEnabled(true);
+                });
+    }
+
+    /**
+     * ✨ Show welcome message after admin unlock
+     */
+    private void showAdminWelcomeMessage() {
+        new AlertDialog.Builder(this)
+                .setTitle("🎉 Welcome, Administrator!")
+                .setMessage("You now have admin privileges. You can:\n\n" +
+                        "• Browse and manage all events\n" +
+                        "• View and moderate users\n" +
+                        "• Remove inappropriate images\n" +
+                        "• Monitor system activity\n\n" +
+                        "Access the Admin Panel from the main menu.")
+                .setPositiveButton("Got it!", null)
+                .show();
     }
 
     /**
@@ -183,6 +355,27 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     /**
+     * Update notification preference
+     */
+    private void updateNotificationPreference(boolean enabled) {
+        if (mAuth.getCurrentUser() == null) return;
+
+        db.collection("users").document(userId)
+                .update("notificationsEnabled", enabled)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "Notification preference updated: " + enabled);
+                    Toast.makeText(this,
+                            enabled ? "Notifications enabled" : "Notifications disabled",
+                            Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error updating notification preference", e);
+                    // Revert switch if update failed
+                    switchNotifications.setChecked(!enabled);
+                });
+    }
+
+    /**
      * Show dialog to become organizer
      */
     private void showBecomeOrganizerDialog() {
@@ -208,7 +401,7 @@ public class SettingsActivity extends AppCompatActivity {
         db.collection("users").document(userId)
                 .set(currentUser)
                 .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "You're now an organizer! ðŸŽ‰", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "You're now an organizer! 🎉", Toast.LENGTH_LONG).show();
                     organizerSection.setVisibility(View.GONE);
 
                     // Restart activity to show organizer features
@@ -272,5 +465,14 @@ public class SettingsActivity extends AppCompatActivity {
     private void showContent() {
         loadingView.setVisibility(View.GONE);
         contentView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Reload user data to check for role changes
+        if (userId != null) {
+            loadUserProfile();
+        }
     }
 }
