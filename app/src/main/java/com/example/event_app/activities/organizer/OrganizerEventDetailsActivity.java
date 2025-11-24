@@ -21,6 +21,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.example.event_app.R;
 import com.example.event_app.activities.organizer.ViewEntrantsActivity;
+import com.example.event_app.activities.organizer.ViewEntrantMapActivity;
 import com.example.event_app.models.Event;
 import com.example.event_app.models.Notification;
 import com.example.event_app.models.User;
@@ -215,12 +216,36 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * US 02.02.02: Show map of entrant locations
+     */
     private void showEntrantMap() {
+        Log.d(TAG, "🗺️ View Map clicked");
+
+        // Check if event is loaded
+        if (event == null) {
+            Toast.makeText(this, "Please wait for event to load...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Check geolocation enabled
         if (!event.isGeolocationEnabled()) {
             Toast.makeText(this, "Geolocation not enabled for this event", Toast.LENGTH_SHORT).show();
             return;
         }
-        Toast.makeText(this, "Map feature coming soon! 🗺️", Toast.LENGTH_SHORT).show();
+
+        // Check for location data
+        if (event.getEntrantLocations() == null || event.getEntrantLocations().isEmpty()) {
+            Toast.makeText(this, "No entrant locations available yet. Entrants need to join first!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        Log.d(TAG, "✅ Launching map with " + event.getEntrantLocations().size() + " locations");
+
+        // Launch map activity
+        Intent intent = new Intent(this, ViewEntrantMapActivity.class);
+        intent.putExtra("EVENT_ID", eventId);
+        startActivity(intent);
     }
 
     private void showQRCode() {
@@ -314,23 +339,23 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 .update("selectedList", event.getSelectedList(),
                         "totalSelected", event.getSelectedList().size())
                 .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "✅ Lottery completed: " + winners.size() + " winners selected");
+                    Log.d(TAG, "âœ… Lottery completed: " + winners.size() + " winners selected");
                     Toast.makeText(this, winners.size() + " winners selected! Sending notifications...", Toast.LENGTH_LONG).show();
 
-                    // ✨ Send notifications to winners and non-winners
+                    // âœ¨ Send notifications to winners and non-winners
                     sendLotteryNotifications(winners, notSelected);
 
                     loadEventDetails();
                 })
                 .addOnFailureListener(e -> {
-                    Log.e(TAG, "❌ Error running lottery", e);
+                    Log.e(TAG, "âŒ Error running lottery", e);
                     Toast.makeText(this, "Failed to run lottery", Toast.LENGTH_SHORT).show();
                     btnRunLottery.setEnabled(true);
                 });
     }
 
     /**
-     * ✨ NEW: Send notifications to lottery winners and non-winners
+     * âœ¨ NEW: Send notifications to lottery winners and non-winners
      */
     private void sendLotteryNotifications(List<String> winners, List<String> notSelected) {
         String eventName = event.getName();
@@ -342,7 +367,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                     eventId,
                     eventName,
                     Notification.TYPE_LOTTERY_WON,
-                    "🎉 You've Been Selected!",
+                    "ðŸŽ‰ You've Been Selected!",
                     "Congratulations! You've been selected for " + eventName + ". Check your invitations to accept or decline.",
                     (successCount, failureCount) -> {
                         Log.d(TAG, "Sent " + successCount + " winner notifications");
@@ -486,7 +511,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             writer.close();
 
             Toast.makeText(this, "Exported " + users.size() + " entrants to Downloads", Toast.LENGTH_LONG).show();
-            Log.d(TAG, "✅ CSV exported: " + csvFile.getAbsolutePath());
+            Log.d(TAG, "âœ… CSV exported: " + csvFile.getAbsolutePath());
 
         } catch (Exception e) {
             Log.e(TAG, "Error creating CSV", e);
@@ -569,7 +594,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * ✨ UPDATED: Send custom message with actual notifications
+     * âœ¨ UPDATED: Send custom message with actual notifications
      */
     private void sendMessageToEntrants(String message, String group) {
         List<String> userIds = new ArrayList<>();
@@ -591,7 +616,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             return;
         }
 
-        // ✨ Send notifications
+        // âœ¨ Send notifications
         notificationService.sendBulkNotifications(
                 userIds,
                 eventId,
@@ -611,7 +636,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * ✨ NEW: Send event reminders to all attending users
+     * âœ¨ NEW: Send event reminders to all attending users
      */
     private void sendEventReminders() {
         String eventName = event.getName();
@@ -627,7 +652,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 eventId,
                 eventName,
                 Notification.TYPE_EVENT_REMINDER,
-                "⏰ Event Reminder",
+                "â° Event Reminder",
                 "Don't forget! " + eventName + " is happening soon. We're looking forward to seeing you!",
                 (successCount, failureCount) -> {
                     runOnUiThread(() -> {

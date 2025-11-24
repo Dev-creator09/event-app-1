@@ -18,6 +18,11 @@
     <application
         android:theme="@style/Theme.LuckySpot">
 
+        <!-- Google Maps API Key -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDahuyC2u9sFDwPBSs7R0YV1CRgEy-lo4k" />
+
         <!-- Splash Activity - LAUNCHER (Entry Point) -->
         <activity
             android:name=".activities.entrant.SplashActivity"
@@ -60,6 +65,11 @@
             android:name=".activities.entrant.NotificationsActivity"
             android:exported="false"
             android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".activities.organizer.ViewEntrantMapActivity"
+            android:exported="false"
+            android:theme="@style/Theme.LuckySpot" />
 
     </application>
 </manifest>

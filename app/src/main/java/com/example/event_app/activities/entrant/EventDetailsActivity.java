@@ -1,6 +1,9 @@
 package com.example.event_app.activities.entrant;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +14,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.example.event_app.R;
@@ -18,6 +23,11 @@ import com.example.event_app.models.Event;
 import com.example.event_app.models.Notification;
 import com.example.event_app.services.NotificationService;
 import com.example.event_app.utils.Navigator;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
+import com.google.android.gms.tasks.CancellationToken;
+import com.google.android.gms.tasks.OnTokenCanceledListener;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,21 +35,25 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * EventDetailsActivity - View event details, join waiting list, accept/decline invitations
  *
- * US 01.01.01: Join waiting list
+ * US 01.01.01: Join waiting list (with location capture)
  * US 01.01.02: Leave waiting list
  * US 01.05.02: Accept invitation
  * US 01.05.03: Decline invitation
  * US 01.06.01: View event from QR code
  * US 01.05.04: See total entrants count
+ * US 02.02.02: Capture location when joining (for organizer map view)
  */
 public class EventDetailsActivity extends AppCompatActivity {
 
     private static final String TAG = "EventDetailsActivity";
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
 
     // UI Elements
     private ImageView ivPoster;
@@ -54,6 +68,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private NotificationService notificationService;
+    private FusedLocationProviderClient fusedLocationClient;
 
     // Data
     private String eventId;
@@ -79,6 +94,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         notificationService = new NotificationService();
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         // Initialize views
         initViews();
@@ -278,7 +294,8 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * US 01.01.01: Join waiting list
+     * US 01.01.01: Join waiting list with optional location capture
+     * US 02.02.02: Capture location for organizer map view
      */
     private void joinWaitingList() {
         if (mAuth.getCurrentUser() == null) {
@@ -289,13 +306,174 @@ public class EventDetailsActivity extends AppCompatActivity {
         String userId = mAuth.getCurrentUser().getUid();
         btnJoinWaitingList.setEnabled(false);
 
-        db.collection("events").document(eventId)
-                .update("waitingList", FieldValue.arrayUnion(userId))
-                .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "Joined waiting list");
-                    Toast.makeText(this, "Joined waiting list!", Toast.LENGTH_SHORT).show();
+        // Check if event requires geolocation
+        if (event.isGeolocationEnabled()) {
+            Log.d(TAG, "📍 Geolocation required - checking permissions");
+            checkLocationPermissionAndJoin(userId);
+        } else {
+            // Just join without location
+            Log.d(TAG, "No geolocation required - joining directly");
+            addToWaitingList(userId, null);
+        }
+    }
 
-                    // ✨ Send notification
+    /**
+     * Check location permission and request if needed
+     */
+    private void checkLocationPermissionAndJoin(String userId) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            // Permission granted - get location
+            Log.d(TAG, "✅ Location permission granted");
+            getCurrentLocationAndJoin(userId);
+        } else {
+            // Need to request permission
+            Log.d(TAG, "⚠️ Requesting location permission");
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    LOCATION_PERMISSION_REQUEST_CODE
+            );
+        }
+    }
+
+    /**
+     * Handle permission request result
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (mAuth.getCurrentUser() == null) return;
+            String userId = mAuth.getCurrentUser().getUid();
+
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted - get location
+                Log.d(TAG, "✅ User granted location permission");
+                getCurrentLocationAndJoin(userId);
+            } else {
+                // Permission denied - ask if they want to join without location
+                Log.w(TAG, "⚠️ User denied location permission");
+                showLocationDeniedDialog(userId);
+            }
+        }
+    }
+
+    /**
+     * Show dialog when location permission is denied
+     */
+    private void showLocationDeniedDialog(String userId) {
+        new AlertDialog.Builder(this)
+                .setTitle("Location Permission Denied")
+                .setMessage("This event requires location tracking. You can still join, but your location won't be recorded.\n\nJoin without location?")
+                .setPositiveButton("Join Anyway", (dialog, which) -> {
+                    addToWaitingList(userId, null);
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                    btnJoinWaitingList.setEnabled(true);
+                })
+                .show();
+    }
+
+    /**
+     * Get current location and join waiting list
+     */
+    private void getCurrentLocationAndJoin(String userId) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            addToWaitingList(userId, null);
+            return;
+        }
+
+        Toast.makeText(this, "Getting your location...", Toast.LENGTH_SHORT).show();
+
+        fusedLocationClient.getCurrentLocation(
+                        Priority.PRIORITY_BALANCED_POWER_ACCURACY,
+                        new CancellationToken() {
+                            @Override
+                            public boolean isCancellationRequested() {
+                                return false;
+                            }
+
+                            @Override
+                            public CancellationToken onCanceledRequested(OnTokenCanceledListener listener) {
+                                return this;
+                            }
+                        })
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        Log.d(TAG, "✅ Got location: " + location.getLatitude() + ", " + location.getLongitude());
+                        addToWaitingList(userId, location);
+                    } else {
+                        Log.w(TAG, "⚠️ Location is null - trying last known location");
+                        getLastKnownLocationAndJoin(userId);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "❌ Failed to get current location", e);
+                    getLastKnownLocationAndJoin(userId);
+                });
+    }
+
+    /**
+     * Fallback: Try to get last known location
+     */
+    private void getLastKnownLocationAndJoin(String userId) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            addToWaitingList(userId, null);
+            return;
+        }
+
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        Log.d(TAG, "✅ Got last known location: " + location.getLatitude() + ", " + location.getLongitude());
+                        addToWaitingList(userId, location);
+                    } else {
+                        Log.w(TAG, "⚠️ No location available - joining without location");
+                        Toast.makeText(this, "Couldn't get location, joining without it", Toast.LENGTH_SHORT).show();
+                        addToWaitingList(userId, null);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "❌ Failed to get last known location", e);
+                    addToWaitingList(userId, null);
+                });
+    }
+
+    /**
+     * Add user to waiting list with optional location
+     */
+    private void addToWaitingList(String userId, Location location) {
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("waitingList", FieldValue.arrayUnion(userId));
+
+        // If we have location and geolocation is enabled, save it
+        if (location != null && event.isGeolocationEnabled()) {
+            Map<String, Object> locationData = new HashMap<>();
+            locationData.put("latitude", location.getLatitude());
+            locationData.put("longitude", location.getLongitude());
+
+            String locationPath = "entrantLocations." + userId;
+            updates.put(locationPath, locationData);
+
+            Log.d(TAG, "📍 Saving location for user: " + userId +
+                    " at (" + location.getLatitude() + ", " + location.getLongitude() + ")");
+        }
+
+        // Update Firebase
+        db.collection("events").document(eventId)
+                .update(updates)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "✅ Successfully joined waiting list" +
+                            (location != null ? " with location" : ""));
+                    Toast.makeText(this,
+                            "Joined waiting list!" + (location != null ? " 📍" : ""),
+                            Toast.LENGTH_SHORT).show();
+
+                    // Send notification
                     notificationService.sendNotification(
                             userId,
                             eventId,
@@ -309,7 +487,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                     loadEventDetails();
                 })
                 .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error joining waiting list", e);
+                    Log.e(TAG, "❌ Error joining waiting list", e);
                     Toast.makeText(this, "Failed to join waiting list", Toast.LENGTH_SHORT).show();
                     btnJoinWaitingList.setEnabled(true);
                 });
@@ -351,7 +529,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * ✨ US 01.05.02: Accept invitation with notification
+     * US 01.05.02: Accept invitation with notification
      */
     private void acceptInvitation() {
         if (mAuth.getCurrentUser() == null) return;
@@ -365,7 +543,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             btnDeclineInvitation.setEnabled(false);
         }
 
-        // Move from selectedList to signedUpUsers
         db.collection("events").document(eventId)
                 .update(
                         "selectedList", FieldValue.arrayRemove(userId),
@@ -375,7 +552,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                     Log.d(TAG, "Invitation accepted");
                     Toast.makeText(this, "Registration confirmed!", Toast.LENGTH_SHORT).show();
 
-                    // ✨ Send confirmation notification
                     notificationService.sendNotification(
                             userId,
                             eventId,
@@ -409,7 +585,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * ✨ US 01.05.03: Decline invitation with notification
+     * US 01.05.03: Decline invitation with notification
      */
     private void declineInvitation() {
         if (mAuth.getCurrentUser() == null) return;
@@ -423,7 +599,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             btnDeclineInvitation.setEnabled(false);
         }
 
-        // Move from selectedList to declinedUsers
         db.collection("events").document(eventId)
                 .update(
                         "selectedList", FieldValue.arrayRemove(userId),
@@ -433,7 +608,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                     Log.d(TAG, "Invitation declined");
                     Toast.makeText(this, "Invitation declined", Toast.LENGTH_SHORT).show();
 
-                    // ✨ Send acknowledgment notification
                     notificationService.sendNotification(
                             userId,
                             eventId,
@@ -443,8 +617,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                             "You've declined the invitation for " + event.getName() + ". Thanks for letting us know!",
                             null
                     );
-
-                    // TODO: Organizer could draw a replacement here
 
                     finish();
                 })
