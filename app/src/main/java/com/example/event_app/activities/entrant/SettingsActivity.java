@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.event_app.R;
 import com.example.event_app.models.User;
+import com.example.event_app.utils.AccessibilityHelper;
 import com.example.event_app.utils.UserRole;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -23,12 +24,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
- * SettingsActivity - Edit profile, manage account, and admin access
+ * SettingsActivity - Edit profile, manage account, admin access, and accessibility
  *
  * Features:
  * - US 01.02.02: Update profile information
  * - US 01.02.04: Delete profile
  * - US 01.04.03: Opt out of notifications
+ * - US [NEW]: Accessibility options (large text, high contrast)
  * - Admin code unlock (secret: CMPUT301Lucky_Spot)
  */
 public class SettingsActivity extends AppCompatActivity {
@@ -47,6 +49,9 @@ public class SettingsActivity extends AppCompatActivity {
     private TextView tvAdminStatus;
     private View adminSection;
 
+    // UI Elements - Accessibility (NEW)
+    private SwitchMaterial switchLargeText, switchHighContrast, switchLargeButtons;
+
     // Firebase
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -54,6 +59,9 @@ public class SettingsActivity extends AppCompatActivity {
     // Data
     private String userId;
     private User currentUser;
+
+    // Accessibility Helper (NEW)
+    private AccessibilityHelper accessibilityHelper;
 
     // Tap counter for hidden admin unlock (like Android Developer Options)
     private int tapCount = 0;
@@ -63,6 +71,10 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
+        // Apply accessibility settings FIRST
+        accessibilityHelper = new AccessibilityHelper(this);
+        accessibilityHelper.applyAccessibilitySettings(this);
 
         // Initialize Firebase
         mAuth = FirebaseAuth.getInstance();
@@ -101,6 +113,11 @@ public class SettingsActivity extends AppCompatActivity {
         tvAdminStatus = findViewById(R.id.tvAdminStatus);
         btnUnlockAdmin = findViewById(R.id.btnUnlockAdmin);
 
+        // Accessibility views (NEW)
+        switchLargeText = findViewById(R.id.switchLargeText);
+        switchHighContrast = findViewById(R.id.switchHighContrast);
+        switchLargeButtons = findViewById(R.id.switchLargeButtons);
+
         // Button listeners
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
         btnSave.setOnClickListener(v -> saveProfile());
@@ -124,6 +141,53 @@ public class SettingsActivity extends AppCompatActivity {
                 updateNotificationPreference(isChecked);
             }
         });
+
+        // Accessibility toggle listeners (NEW)
+        initAccessibilitySwitches();
+    }
+
+    /**
+     * ✨ NEW: Initialize accessibility switches
+     */
+    private void initAccessibilitySwitches() {
+        if (switchLargeText == null || switchHighContrast == null || switchLargeButtons == null) {
+            return; // Views not found in layout
+        }
+
+        // Load current settings
+        switchLargeText.setChecked(accessibilityHelper.isLargeTextEnabled());
+        switchHighContrast.setChecked(accessibilityHelper.isHighContrastEnabled());
+        switchLargeButtons.setChecked(accessibilityHelper.isLargeButtonsEnabled());
+
+        // Large Text toggle
+        switchLargeText.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            accessibilityHelper.setLargeTextEnabled(isChecked);
+            showRestartDialog("Large Text");
+        });
+
+        // High Contrast toggle
+        switchHighContrast.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            accessibilityHelper.setHighContrastEnabled(isChecked);
+            // Recreate activity immediately to apply theme change
+            recreate();
+        });
+
+        // Larger Buttons toggle
+        switchLargeButtons.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            accessibilityHelper.setLargeButtonsEnabled(isChecked);
+            showRestartDialog("Larger Touch Targets");
+        });
+    }
+
+    /**
+     * ✨ NEW: Show dialog suggesting app restart for accessibility changes
+     */
+    private void showRestartDialog(String feature) {
+        new AlertDialog.Builder(this)
+                .setTitle(feature + " Enabled")
+                .setMessage("Changes will take full effect when you restart the app.")
+                .setPositiveButton("OK", null)
+                .show();
     }
 
     private void loadUserProfile() {

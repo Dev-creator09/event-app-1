@@ -4,14 +4,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="?attr/colorSurface">
 
     <!-- App Bar Layout -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
+        android:background="?attr/colorSurface"
         app:elevation="0dp">
 
         <!-- Toolbar -->
@@ -19,10 +19,10 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="#FFFFFF"
+            android:background="?attr/colorSurface"
             app:navigationIcon="@android:drawable/ic_menu_close_clear_cancel"
             app:title="Manage Event"
-            app:titleTextColor="#000000"/>
+            app:titleTextColor="?attr/colorOnSurface"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -44,7 +44,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Event Name"
-                android:textColor="#000000"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="28sp"
                 android:fontFamily="sans-serif-medium"
                 android:layout_marginBottom="8dp"/>
@@ -54,7 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Capacity: 1"
-                android:textColor="#5E5E5E"
+                android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="16sp"
                 android:layout_marginBottom="24dp"/>
 
@@ -73,7 +73,7 @@
                     android:layout_marginEnd="8dp"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="0dp"
-                    app:strokeColor="#E0E0E0"
+                    app:strokeColor="?attr/colorOutline"
                     app:strokeWidth="1dp"
                     app:cardBackgroundColor="#FFF9C4">
 
@@ -89,7 +89,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
-                            android:textColor="#000000"
+                            android:textColor="?attr/colorOnSurface"
                             android:textSize="24sp"
                             android:fontFamily="sans-serif-medium"/>
 
@@ -97,7 +97,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Waiting"
-                            android:textColor="#5E5E5E"
+                            android:textColor="?attr/colorOnSurfaceVariant"
                             android:textSize="12sp"
                             android:layout_marginTop="4dp"/>
 
@@ -113,7 +113,7 @@
                     android:layout_marginEnd="8dp"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="0dp"
-                    app:strokeColor="#E0E0E0"
+                    app:strokeColor="?attr/colorOutline"
                     app:strokeWidth="1dp"
                     app:cardBackgroundColor="#E3F2FD">
 
@@ -129,7 +129,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
-                            android:textColor="#000000"
+                            android:textColor="?attr/colorOnSurface"
                             android:textSize="24sp"
                             android:fontFamily="sans-serif-medium"/>
 
@@ -137,7 +137,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Selected"
-                            android:textColor="#5E5E5E"
+                            android:textColor="?attr/colorOnSurfaceVariant"
                             android:textSize="12sp"
                             android:layout_marginTop="4dp"/>
 
@@ -152,7 +152,7 @@
                     android:layout_weight="1"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="0dp"
-                    app:strokeColor="#E0E0E0"
+                    app:strokeColor="?attr/colorOutline"
                     app:strokeWidth="1dp"
                     app:cardBackgroundColor="#E8F5E9">
 
@@ -168,7 +168,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
-                            android:textColor="#000000"
+                            android:textColor="?attr/colorOnSurface"
                             android:textSize="24sp"
                             android:fontFamily="sans-serif-medium"/>
 
@@ -176,7 +176,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Attending"
-                            android:textColor="#5E5E5E"
+                            android:textColor="?attr/colorOnSurfaceVariant"
                             android:textSize="12sp"
                             android:layout_marginTop="4dp"/>
 
@@ -191,26 +191,47 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Actions"
-                android:textColor="#000000"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="20sp"
                 android:fontFamily="sans-serif-medium"
                 android:layout_marginBottom="16dp"/>
 
-            <!-- Lottery Actions -->
+            <!-- ✨ NEW: Lottery Actions (2 buttons toggle visibility) -->
+
+            <!-- Run Lottery Button (Shows BEFORE lottery) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnRunLottery"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:text="Run Lottery"
-                android:textColor="#FFFFFF"
+                android:text="🎰 Run Lottery"
+                android:textColor="?attr/colorOnPrimary"
                 android:textSize="16sp"
                 android:textAllCaps="false"
                 android:fontFamily="sans-serif-medium"
-                app:backgroundTint="#000000"
+                app:backgroundTint="?attr/colorPrimary"
                 app:cornerRadius="8dp"
                 app:icon="@android:drawable/ic_menu_rotate"
-                app:iconTint="#FFFFFF"
+                app:iconTint="?attr/colorOnPrimary"
                 android:layout_marginBottom="12dp"/>
+
+            <!-- ✨ NEW: Draw Replacement Button (Shows AFTER lottery) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDrawReplacement"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="🔄 Draw Replacement"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="16sp"
+                android:textAllCaps="false"
+                android:fontFamily="sans-serif-medium"
+                app:backgroundTint="#FFF9C4"
+                app:strokeColor="#FBC02D"
+                app:strokeWidth="2dp"
+                app:cornerRadius="8dp"
+                app:icon="@android:drawable/ic_menu_rotate"
+                app:iconTint="?attr/colorOnSurface"
+                android:layout_marginBottom="12dp"
+                android:visibility="gone"/>
 
             <!-- Action Buttons Grid -->
             <LinearLayout
@@ -233,15 +254,15 @@
                         android:layout_height="56dp"
                         android:layout_weight="1"
                         android:text="View Entrants"
-                        android:textColor="#000000"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="14sp"
                         android:textAllCaps="false"
-                        app:backgroundTint="#F5F5F5"
-                        app:strokeColor="#000000"
+                        app:backgroundTint="?attr/colorSurfaceVariant"
+                        app:strokeColor="?attr/colorOutline"
                         app:strokeWidth="1dp"
                         app:cornerRadius="8dp"
                         app:icon="@android:drawable/ic_menu_view"
-                        app:iconTint="#000000"
+                        app:iconTint="?attr/colorOnSurface"
                         android:layout_marginEnd="6dp"/>
 
                     <!-- View Map -->
@@ -251,15 +272,15 @@
                         android:layout_height="56dp"
                         android:layout_weight="1"
                         android:text="View Map"
-                        android:textColor="#000000"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="14sp"
                         android:textAllCaps="false"
-                        app:backgroundTint="#F5F5F5"
-                        app:strokeColor="#000000"
+                        app:backgroundTint="?attr/colorSurfaceVariant"
+                        app:strokeColor="?attr/colorOutline"
                         app:strokeWidth="1dp"
                         app:cornerRadius="8dp"
                         app:icon="@android:drawable/ic_dialog_map"
-                        app:iconTint="#000000"
+                        app:iconTint="?attr/colorOnSurface"
                         android:layout_marginStart="6dp"/>
 
                 </LinearLayout>
@@ -278,15 +299,15 @@
                         android:layout_height="56dp"
                         android:layout_weight="1"
                         android:text="QR Code"
-                        android:textColor="#000000"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="14sp"
                         android:textAllCaps="false"
-                        app:backgroundTint="#F5F5F5"
-                        app:strokeColor="#000000"
+                        app:backgroundTint="?attr/colorSurfaceVariant"
+                        app:strokeColor="?attr/colorOutline"
                         app:strokeWidth="1dp"
                         app:cornerRadius="8dp"
                         app:icon="@android:drawable/ic_menu_gallery"
-                        app:iconTint="#000000"
+                        app:iconTint="?attr/colorOnSurface"
                         android:layout_marginEnd="6dp"/>
 
                     <!-- Send Notification -->
@@ -296,15 +317,15 @@
                         android:layout_height="56dp"
                         android:layout_weight="1"
                         android:text="Send Message"
-                        android:textColor="#000000"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="14sp"
                         android:textAllCaps="false"
-                        app:backgroundTint="#F5F5F5"
-                        app:strokeColor="#000000"
+                        app:backgroundTint="?attr/colorSurfaceVariant"
+                        app:strokeColor="?attr/colorOutline"
                         app:strokeWidth="1dp"
                         app:cornerRadius="8dp"
                         app:icon="@android:drawable/ic_dialog_email"
-                        app:iconTint="#000000"
+                        app:iconTint="?attr/colorOnSurface"
                         android:layout_marginStart="6dp"/>
 
                 </LinearLayout>
@@ -323,15 +344,15 @@
                         android:layout_height="56dp"
                         android:layout_weight="1"
                         android:text="Export List"
-                        android:textColor="#000000"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="14sp"
                         android:textAllCaps="false"
-                        app:backgroundTint="#F5F5F5"
-                        app:strokeColor="#000000"
+                        app:backgroundTint="?attr/colorSurfaceVariant"
+                        app:strokeColor="?attr/colorOutline"
                         app:strokeWidth="1dp"
                         app:cornerRadius="8dp"
                         app:icon="@android:drawable/ic_menu_save"
-                        app:iconTint="#000000"
+                        app:iconTint="?attr/colorOnSurface"
                         android:layout_marginEnd="6dp"/>
 
                     <!-- Update Poster -->
@@ -341,15 +362,15 @@
                         android:layout_height="56dp"
                         android:layout_weight="1"
                         android:text="Update Poster"
-                        android:textColor="#000000"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="14sp"
                         android:textAllCaps="false"
-                        app:backgroundTint="#F5F5F5"
-                        app:strokeColor="#000000"
+                        app:backgroundTint="?attr/colorSurfaceVariant"
+                        app:strokeColor="?attr/colorOutline"
                         app:strokeWidth="1dp"
                         app:cornerRadius="8dp"
                         app:icon="@android:drawable/ic_menu_edit"
-                        app:iconTint="#000000"
+                        app:iconTint="?attr/colorOnSurface"
                         android:layout_marginStart="6dp"/>
 
                 </LinearLayout>
@@ -413,7 +434,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Loading..."
-                android:textColor="#FFFFFF"
+                android:textColor="?attr/colorOnPrimary"
                 android:textSize="16sp"
                 android:layout_marginTop="16dp"/>
 

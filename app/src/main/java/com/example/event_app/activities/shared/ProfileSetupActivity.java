@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.event_app.R;
 import com.example.event_app.activities.entrant.MainActivity;
 import com.example.event_app.models.User;
+import com.example.event_app.utils.AccessibilityHelper;
 import com.example.event_app.utils.UserRole;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -51,6 +52,7 @@ public class ProfileSetupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_setup);
+        new AccessibilityHelper(this).applyAccessibilitySettings(this);
 
         // Initialize Firebase
         mAuth = FirebaseAuth.getInstance();

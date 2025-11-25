@@ -17,6 +17,7 @@ import com.example.event_app.R;
 import com.example.event_app.adapters.NotificationAdapter;
 import com.example.event_app.models.Notification;
 import com.example.event_app.services.NotificationService;
+import com.example.event_app.utils.AccessibilityHelper;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -56,6 +57,7 @@ public class NotificationsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notifications);
+        new AccessibilityHelper(this).applyAccessibilitySettings(this);
 
         // Initialize Firebase
         mAuth = FirebaseAuth.getInstance();

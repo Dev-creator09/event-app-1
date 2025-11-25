@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.event_app.R;
 import com.example.event_app.adapters.UserAdapter;
 import com.example.event_app.models.User;
+import com.example.event_app.utils.AccessibilityHelper;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -40,6 +41,7 @@ public class AdminBrowseUsersActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_browse_users);
+        new AccessibilityHelper(this).applyAccessibilitySettings(this);
 
         // Set up action bar
         if (getSupportActionBar() != null) {

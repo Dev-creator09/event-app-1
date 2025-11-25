@@ -26,7 +26,9 @@ import com.example.event_app.models.Event;
 import com.example.event_app.models.Notification;
 import com.example.event_app.models.User;
 import com.example.event_app.services.NotificationService;
+import com.example.event_app.utils.AccessibilityHelper;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.zxing.BarcodeFormat;
@@ -51,6 +53,7 @@ import com.google.android.material.button.MaterialButton;
  *
  * Features:
  * - Run lottery and select winners (with notifications)
+ * - Draw replacement from pool (US 02.05.03)
  * - View entrants in different states
  * - View map of entrant locations
  * - Generate and view QR code
@@ -66,6 +69,7 @@ import com.google.android.material.button.MaterialButton;
  * US 02.02.02: View entrant map
  * US 02.04.02: Update poster
  * US 02.05.02: Run lottery (with notifications)
+ * US 02.05.03: Draw replacement from pool
  * US 02.06.01-04: Manage entrant lists
  * US 02.06.05: Export CSV
  * US 02.07.01-03: Send notifications
@@ -80,7 +84,8 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     private TextView tvWaitingCount, tvSelectedCount, tvAttendingCount;
     private MaterialButton btnRunLottery, btnViewEntrants, btnViewMap, btnGenerateQR;
     private MaterialButton btnSendNotification, btnExportCSV, btnUpdatePoster, btnCancelEvent;
-    private MaterialButton btnSendReminder; // New button for event reminders
+    private MaterialButton btnSendReminder; // Button for event reminders
+    private MaterialButton btnDrawReplacement; // ✨ NEW: Replacement lottery button
     private View loadingView;
 
     // Data
@@ -104,6 +109,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_organizer_event_details);
+        new AccessibilityHelper(this).applyAccessibilitySettings(this);
 
         // Get event ID
         eventId = getIntent().getStringExtra("EVENT_ID");
@@ -147,7 +153,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         btnExportCSV = findViewById(R.id.btnExportCSV);
         btnUpdatePoster = findViewById(R.id.btnUpdatePoster);
         btnCancelEvent = findViewById(R.id.btnCancelEvent);
-
+        btnDrawReplacement = findViewById(R.id.btnDrawReplacement); // ✨ NEW
 
         // Other views
         loadingView = findViewById(R.id.loadingView);
@@ -161,6 +167,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         btnExportCSV.setOnClickListener(v -> exportToCSV());
         btnUpdatePoster.setOnClickListener(v -> selectNewPoster());
         btnCancelEvent.setOnClickListener(v -> showCancelEventDialog());
+        btnDrawReplacement.setOnClickListener(v -> showDrawReplacementDialog()); // ✨ NEW
 
         if (btnSendReminder != null) {
             btnSendReminder.setOnClickListener(v -> sendEventReminders());
@@ -186,6 +193,40 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
         btnRunLottery.setEnabled(event.getCapacity() != null && waitingCount > 0);
         btnViewMap.setEnabled(event.isGeolocationEnabled());
+
+        // ✨ NEW: Update button visibility based on lottery state
+        updateLotteryButtonVisibility();
+    }
+
+    /**
+     * ✨ NEW: Update lottery button visibility
+     * - Show "Run Lottery" BEFORE lottery
+     * - Show "Draw Replacement" AFTER lottery
+     */
+    private void updateLotteryButtonVisibility() {
+        if (event.isLotteryRun()) {
+            // Lottery already run - show replacement button
+            btnRunLottery.setVisibility(View.GONE);
+            btnDrawReplacement.setVisibility(View.VISIBLE);
+
+            // Disable if capacity full or pool empty
+            boolean canDrawMore = !event.isCapacityFull() && event.hasReplacementPool();
+            btnDrawReplacement.setEnabled(canDrawMore);
+
+            if (!canDrawMore) {
+                if (event.isCapacityFull()) {
+                    btnDrawReplacement.setText("✅ Capacity Full");
+                } else if (!event.hasReplacementPool()) {
+                    btnDrawReplacement.setText("❌ Pool Empty");
+                }
+            } else {
+                btnDrawReplacement.setText("🔄 Draw Replacement");
+            }
+        } else {
+            // Lottery not run yet - show run lottery button
+            btnRunLottery.setVisibility(View.VISIBLE);
+            btnDrawReplacement.setVisibility(View.GONE);
+        }
     }
 
     private void openViewEntrantsActivity() {
@@ -281,9 +322,16 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * US 02.05.02: Show dialog to run lottery
+     * ✨ UPDATED: Check if lottery already run
      */
     private void showLotteryDialog() {
+        // ✨ NEW: Prevent running lottery twice
+        if (event.isLotteryRun()) {
+            Toast.makeText(this, "Lottery already run! Use 'Draw Replacement' instead.",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (event.getCapacity() == null) {
             Toast.makeText(this, "No capacity set for this event", Toast.LENGTH_SHORT).show();
             return;
@@ -301,14 +349,19 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
         new AlertDialog.Builder(this)
                 .setTitle("Run Lottery")
-                .setMessage(String.format("Select %d winners from %d people on waiting list?\n\nNotifications will be sent to all participants.", toSelect, waitingCount))
+                .setMessage(String.format(
+                        "Select %d winners from %d people on waiting list?\n\n" +
+                                "⚠️ This can only be done ONCE.\n" +
+                                "Remaining entrants will go into replacement pool.\n\n" +
+                                "Notifications will be sent to all participants.",
+                        toSelect, waitingCount))
                 .setPositiveButton("Run Lottery", (dialog, which) -> runLottery(toSelect))
                 .setNegativeButton("Cancel", null)
                 .show();
     }
 
     /**
-     * Run lottery and send notifications to winners and non-winners
+     * ✨ UPDATED: Run lottery with notSelectedList
      */
     private void runLottery(int numberOfWinners) {
         btnRunLottery.setEnabled(false);
@@ -319,7 +372,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         // Select winners
         List<String> winners = waitingList.subList(0, Math.min(numberOfWinners, waitingList.size()));
 
-        // Get non-winners (everyone else on waiting list)
+        // ✨ NEW: Get non-winners (replacement pool)
         List<String> notSelected = new ArrayList<>(waitingList);
         notSelected.removeAll(winners);
 
@@ -334,28 +387,122 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             }
         }
 
-        // Update Firebase
+        // ✨ NEW: Update Firebase with notSelectedList and lotteryRun flag
         db.collection("events").document(eventId)
-                .update("selectedList", event.getSelectedList(),
-                        "totalSelected", event.getSelectedList().size())
+                .update(
+                        "selectedList", event.getSelectedList(),
+                        "notSelectedList", notSelected,           // ✨ NEW: Save replacement pool
+                        "lotteryRun", true,                       // ✨ NEW: Mark lottery as run
+                        "lotteryDate", System.currentTimeMillis(), // ✨ NEW: Save when lottery ran
+                        "totalSelected", event.getSelectedList().size()
+                )
                 .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "âœ… Lottery completed: " + winners.size() + " winners selected");
-                    Toast.makeText(this, winners.size() + " winners selected! Sending notifications...", Toast.LENGTH_LONG).show();
+                    Log.d(TAG, "✅ Lottery completed: " + winners.size() + " winners, " +
+                            notSelected.size() + " in replacement pool");
+                    Toast.makeText(this, winners.size() + " winners selected! Pool: " +
+                            notSelected.size(), Toast.LENGTH_LONG).show();
 
-                    // âœ¨ Send notifications to winners and non-winners
+                    // Send notifications to winners and non-winners
                     sendLotteryNotifications(winners, notSelected);
 
                     loadEventDetails();
                 })
                 .addOnFailureListener(e -> {
-                    Log.e(TAG, "âŒ Error running lottery", e);
+                    Log.e(TAG, "❌ Error running lottery", e);
                     Toast.makeText(this, "Failed to run lottery", Toast.LENGTH_SHORT).show();
                     btnRunLottery.setEnabled(true);
                 });
     }
 
     /**
-     * âœ¨ NEW: Send notifications to lottery winners and non-winners
+     * ✨ NEW: Show dialog to draw replacement
+     */
+    private void showDrawReplacementDialog() {
+        int poolSize = event.getNotSelectedList() != null ? event.getNotSelectedList().size() : 0;
+        int spotsRemaining = event.getSpotsRemaining();
+
+        if (poolSize == 0) {
+            Toast.makeText(this, "No one in replacement pool", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (spotsRemaining <= 0) {
+            Toast.makeText(this, "Capacity is full!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Draw Replacement")
+                .setMessage(String.format(
+                        "Draw 1 replacement from pool of %d?\n\n" +
+                                "Spots remaining: %d\n" +
+                                "Pool available: %d",
+                        poolSize, spotsRemaining, poolSize))
+                .setPositiveButton("Draw", (dialog, which) -> drawReplacement())
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    /**
+     * ✨ NEW: Draw one replacement from the pool
+     * US 02.05.03: Draw replacement applicant from pooling system
+     */
+    private void drawReplacement() {
+        btnDrawReplacement.setEnabled(false);
+
+        List<String> pool = new ArrayList<>(event.getNotSelectedList());
+
+        if (pool.isEmpty()) {
+            Toast.makeText(this, "Replacement pool is empty", Toast.LENGTH_SHORT).show();
+            btnDrawReplacement.setEnabled(true);
+            return;
+        }
+
+        // Check capacity
+        if (event.isCapacityFull()) {
+            Toast.makeText(this, "Event is at full capacity", Toast.LENGTH_SHORT).show();
+            btnDrawReplacement.setEnabled(true);
+            return;
+        }
+
+        // Randomly pick one person from pool
+        Collections.shuffle(pool);
+        String replacementUserId = pool.get(0);
+
+        // Update Firebase: move from notSelected to selected
+        db.collection("events").document(eventId)
+                .update(
+                        "selectedList", FieldValue.arrayUnion(replacementUserId),
+                        "notSelectedList", FieldValue.arrayRemove(replacementUserId)
+                )
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "✅ Replacement drawn: " + replacementUserId);
+                    Toast.makeText(this, "Replacement selected! Sending notification...",
+                            Toast.LENGTH_SHORT).show();
+
+                    // ✨ Send "You've been selected!" notification
+                    notificationService.sendNotification(
+                            replacementUserId,
+                            eventId,
+                            event.getName(),
+                            Notification.TYPE_LOTTERY_WON,
+                            "🎉 Good News - You've Been Selected!",
+                            "A spot opened up for " + event.getName() +
+                                    "! You've been selected from the waiting list. Check your invitations to accept or decline.",
+                            null  // ✅ FIXED - Just pass null
+                    );
+
+                    loadEventDetails();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "❌ Error drawing replacement", e);
+                    Toast.makeText(this, "Failed to draw replacement", Toast.LENGTH_SHORT).show();
+                    btnDrawReplacement.setEnabled(true);
+                });
+    }
+
+    /**
+     * ✨ NEW: Send notifications to lottery winners and non-winners
      */
     private void sendLotteryNotifications(List<String> winners, List<String> notSelected) {
         String eventName = event.getName();
@@ -367,7 +514,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                     eventId,
                     eventName,
                     Notification.TYPE_LOTTERY_WON,
-                    "ðŸŽ‰ You've Been Selected!",
+                    "🎉 You've Been Selected!",
                     "Congratulations! You've been selected for " + eventName + ". Check your invitations to accept or decline.",
                     (successCount, failureCount) -> {
                         Log.d(TAG, "Sent " + successCount + " winner notifications");
@@ -511,7 +658,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             writer.close();
 
             Toast.makeText(this, "Exported " + users.size() + " entrants to Downloads", Toast.LENGTH_LONG).show();
-            Log.d(TAG, "âœ… CSV exported: " + csvFile.getAbsolutePath());
+            Log.d(TAG, "✅ CSV exported: " + csvFile.getAbsolutePath());
 
         } catch (Exception e) {
             Log.e(TAG, "Error creating CSV", e);
@@ -594,7 +741,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * âœ¨ UPDATED: Send custom message with actual notifications
+     * ✨ UPDATED: Send custom message with actual notifications
      */
     private void sendMessageToEntrants(String message, String group) {
         List<String> userIds = new ArrayList<>();
@@ -616,7 +763,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             return;
         }
 
-        // âœ¨ Send notifications
+        // ✨ Send notifications
         notificationService.sendBulkNotifications(
                 userIds,
                 eventId,
@@ -636,7 +783,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * âœ¨ NEW: Send event reminders to all attending users
+     * ✨ NEW: Send event reminders to all attending users
      */
     private void sendEventReminders() {
         String eventName = event.getName();
@@ -652,7 +799,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 eventId,
                 eventName,
                 Notification.TYPE_EVENT_REMINDER,
-                "â° Event Reminder",
+                "⏰ Event Reminder",
                 "Don't forget! " + eventName + " is happening soon. We're looking forward to seeing you!",
                 (successCount, failureCount) -> {
                     runOnUiThread(() -> {

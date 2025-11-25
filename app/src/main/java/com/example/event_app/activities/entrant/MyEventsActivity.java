@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.event_app.R;
 import com.example.event_app.adapters.MyEventsAdapter;
 import com.example.event_app.models.Event;
+import com.example.event_app.utils.AccessibilityHelper;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -58,6 +59,7 @@ public class MyEventsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_events);
+        new AccessibilityHelper(this).applyAccessibilitySettings(this);
 
         // Initialize Firebase
         db = FirebaseFirestore.getInstance();

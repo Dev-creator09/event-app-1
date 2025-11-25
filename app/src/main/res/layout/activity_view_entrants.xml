@@ -4,21 +4,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="?attr/colorSurface">
 
     <!-- App Bar -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
+        android:background="?attr/colorSurface"
         app:elevation="0dp">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="#FFFFFF"
+            android:background="?attr/colorSurface"
             app:navigationIcon="@android:drawable/ic_menu_close_clear_cancel"
             app:title="View Entrants"
             app:titleTextColor="#000000"/>
@@ -28,8 +28,8 @@
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#FFFFFF"
-            app:tabTextColor="#5E5E5E"
+            android:background="?attr/colorSurface"
+            app:tabTextColor="?attr/colorOnSurfaceVariant"
             app:tabSelectedTextColor="#000000"
             app:tabIndicatorColor="#000000"
             app:tabIndicatorHeight="3dp"
@@ -50,7 +50,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="16dp"
-            android:background="#F5F5F5">
+            android:background="?attr/colorSurfaceVariant">
 
             <TextView
                 android:id="@+id/tvListCount"
@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="0 entrants"
-                android:textColor="#000000"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="16sp"
                 android:fontFamily="sans-serif-medium"/>
 
@@ -88,7 +88,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="No entrants in this list"
-                android:textColor="#5E5E5E"
+                android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="16sp"
                 android:textAlignment="center"/>
 

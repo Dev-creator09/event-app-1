@@ -15,6 +15,7 @@ import androidx.cardview.widget.CardView;
 import com.bumptech.glide.Glide;
 import com.example.event_app.R;
 import com.example.event_app.models.Event;
+import com.example.event_app.utils.AccessibilityHelper;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -59,6 +60,7 @@ public class AdminEventDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_event_details);
+        new AccessibilityHelper(this).applyAccessibilitySettings(this);
 
         // Set up action bar
         if (getSupportActionBar() != null) {

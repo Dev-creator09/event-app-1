@@ -33,6 +33,8 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.event_app.utils.AccessibilityHelper;
+
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -81,6 +83,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details);
+        new AccessibilityHelper(this).applyAccessibilitySettings(this);
 
         // Get event ID from intent
         eventId = getIntent().getStringExtra(Navigator.EXTRA_EVENT_ID);

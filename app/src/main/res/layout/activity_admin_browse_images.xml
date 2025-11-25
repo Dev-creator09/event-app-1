@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="?attr/colorSurface">
 
     <!-- Header with Back Button -->
     <LinearLayout
@@ -14,7 +14,7 @@
         android:orientation="horizontal"
         android:padding="16dp"
         android:gravity="center_vertical"
-        android:background="#FFFFFF"
+        android:background="?attr/colorSurface"
         android:elevation="4dp">
 
         <ImageButton
@@ -24,7 +24,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_menu_close_clear_cancel"
             android:contentDescription="Back"
-            app:tint="#000000"/>
+            app:tint="?attr/colorOnSurface"/>
 
         <TextView
             android:layout_width="0dp"
@@ -32,7 +32,7 @@
             android:layout_weight="1"
             android:layout_marginStart="16dp"
             android:text="Browse Images"
-            android:textColor="#000000"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="24sp"
             android:fontFamily="sans-serif-medium"/>
 
@@ -44,7 +44,7 @@
         android:layout_height="match_parent"
         android:layout_marginTop="72dp"
         android:orientation="vertical"
-        android:background="#FFFFFF">
+        android:background="?attr/colorSurface">
 
         <!-- Optional Search Bar -->
         <com.google.android.material.textfield.TextInputLayout
@@ -109,14 +109,14 @@
                 android:text="No images found"
                 android:textSize="18sp"
                 android:fontFamily="sans-serif-medium"
-                android:textColor="#5E5E5E"/>
+                android:textColor="?attr/colorOnSurfaceVariant"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Uploaded images will appear here"
                 android:textSize="14sp"
-                android:textColor="#9E9E9E"
+                android:textColor="?attr/colorOnSurfaceVariant"
                 android:layout_marginTop="8dp"
                 android:gravity="center"/>
 

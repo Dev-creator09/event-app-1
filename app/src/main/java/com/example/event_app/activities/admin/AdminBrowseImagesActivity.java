@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.event_app.R;
 import com.example.event_app.adapters.ImageAdapter;
 import com.example.event_app.models.ImageData;
+import com.example.event_app.utils.AccessibilityHelper;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
@@ -45,6 +46,7 @@ public class AdminBrowseImagesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_browse_images);
+        new AccessibilityHelper(this).applyAccessibilitySettings(this);
 
         // Set up back button
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());

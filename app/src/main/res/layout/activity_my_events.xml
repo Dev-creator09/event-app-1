@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="?attr/colorSurface">
 
     <!-- Header -->
     <LinearLayout
@@ -23,7 +23,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_menu_close_clear_cancel"
             android:contentDescription="Back"
-            app:tint="#000000"/>
+            app:tint="?attr/colorOnSurface"/>
 
         <TextView
             android:layout_width="0dp"
@@ -31,7 +31,7 @@
             android:layout_weight="1"
             android:layout_marginStart="16dp"
             android:text="My Events"
-            android:textColor="#000000"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="24sp"
             android:fontFamily="sans-serif-medium"/>
 
@@ -42,8 +42,8 @@
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
-        app:tabTextColor="#5E5E5E"
+        android:background="?attr/colorSurface"
+        app:tabTextColor="?attr/colorOnSurfaceVariant"
         app:tabSelectedTextColor="#000000"
         app:tabIndicatorColor="#000000"
         app:tabMode="scrollable"
@@ -87,7 +87,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="No events yet"
-            android:textColor="#5E5E5E"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="18sp"
             android:textAlignment="center"/>
 
@@ -109,7 +109,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Error loading events"
-            android:textColor="#000000"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="18sp"
             android:layout_marginBottom="16dp"/>
 
@@ -118,8 +118,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Retry"
-            android:textColor="#FFFFFF"
-            app:backgroundTint="#000000"
+            android:textColor="?attr/colorSurface"
+            app:backgroundTint="?attr/colorPrimary"
             app:cornerRadius="8dp"/>
 
     </LinearLayout>

@@ -16,6 +16,8 @@ import com.example.event_app.models.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.event_app.utils.AccessibilityHelper;
+
 
 /**
  * MainActivity - Main app with bottom navigation
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        new AccessibilityHelper(this).applyAccessibilitySettings(this);
 
         // Initialize Firebase
         mAuth = FirebaseAuth.getInstance();

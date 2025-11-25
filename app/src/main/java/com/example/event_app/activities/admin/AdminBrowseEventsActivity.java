@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.event_app.R;
 import com.example.event_app.adapters.AdminEventAdapter;
 import com.example.event_app.models.Event;
+import com.example.event_app.utils.AccessibilityHelper;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
@@ -91,6 +92,7 @@ public class AdminBrowseEventsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_browse_events);
+        new AccessibilityHelper(this).applyAccessibilitySettings(this);
 
         // Set up action bar
         if (getSupportActionBar() != null) {

@@ -12,7 +12,7 @@
     <!-- Optional: Add a white border -->
     <stroke
         android:width="1dp"
-        android:color="#FFFFFF"/>
+        android:color="?attr/colorSurface"/>
 
     <!-- Make it circular -->
     <size

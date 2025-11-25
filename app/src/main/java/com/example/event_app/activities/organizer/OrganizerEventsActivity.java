@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.event_app.R;
 import com.example.event_app.adapters.OrganizerEventsAdapter;
 import com.example.event_app.models.Event;
+import com.example.event_app.utils.AccessibilityHelper;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -52,6 +53,7 @@ public class OrganizerEventsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_organizer_events);
+        new AccessibilityHelper(this).applyAccessibilitySettings(this);
 
         // Initialize Firebase
         db = FirebaseFirestore.getInstance();

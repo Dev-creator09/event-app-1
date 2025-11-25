@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="?attr/colorSurface">
 
     <!-- Loading View -->
     <LinearLayout
@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Loading event..."
-            android:textColor="#5E5E5E"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:layout_marginTop="16dp"/>
     </LinearLayout>
 
@@ -49,7 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Error loading event"
-            android:textColor="#000000"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="18sp"
             android:fontFamily="sans-serif-medium"
             android:layout_marginBottom="16dp"/>
@@ -59,8 +59,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Retry"
-            android:textColor="#FFFFFF"
-            app:backgroundTint="#000000"
+            android:textColor="?attr/colorSurface"
+            app:backgroundTint="?attr/colorPrimary"
             app:cornerRadius="8dp"/>
     </LinearLayout>
 
@@ -88,7 +88,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:background="#F5F5F5"
+                    android:background="?attr/colorSurfaceVariant"
                     android:contentDescription="Event poster"/>
             </androidx.cardview.widget.CardView>
 
@@ -105,7 +105,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Event Name"
-                    android:textColor="#000000"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="32sp"
                     android:fontFamily="sans-serif-medium"
                     android:layout_marginBottom="12dp"/>
@@ -122,7 +122,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Hosted by "
-                        android:textColor="#5E5E5E"
+                        android:textColor="?attr/colorOnSurfaceVariant"
                         android:textSize="16sp"/>
 
                     <TextView
@@ -130,7 +130,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Event Organizer"
-                        android:textColor="#000000"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="16sp"
                         android:fontFamily="sans-serif-medium"/>
                 </LinearLayout>
@@ -159,7 +159,7 @@
                             android:layout_height="24dp"
                             android:src="@android:drawable/ic_menu_my_calendar"
                             android:layout_marginEnd="12dp"
-                            app:tint="#000000"/>
+                            app:tint="?attr/colorOnSurface"/>
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -171,7 +171,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Date &amp; Time"
-                                android:textColor="#5E5E5E"
+                                android:textColor="?attr/colorOnSurfaceVariant"
                                 android:textSize="12sp"/>
 
                             <TextView
@@ -179,7 +179,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Nov 07, 2025 at 12:36 AM"
-                                android:textColor="#000000"
+                                android:textColor="?attr/colorOnSurface"
                                 android:textSize="16sp"
                                 android:fontFamily="sans-serif-medium"
                                 android:layout_marginTop="4dp"/>
@@ -213,7 +213,7 @@
                             android:layout_height="24dp"
                             android:src="@android:drawable/ic_dialog_map"
                             android:layout_marginEnd="12dp"
-                            app:tint="#000000"/>
+                            app:tint="?attr/colorOnSurface"/>
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -225,7 +225,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Location"
-                                android:textColor="#5E5E5E"
+                                android:textColor="?attr/colorOnSurfaceVariant"
                                 android:textSize="12sp"/>
 
                             <TextView
@@ -233,7 +233,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Event Location"
-                                android:textColor="#000000"
+                                android:textColor="?attr/colorOnSurface"
                                 android:textSize="16sp"
                                 android:fontFamily="sans-serif-medium"
                                 android:layout_marginTop="4dp"/>
@@ -243,7 +243,7 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:src="@android:drawable/ic_menu_directions"
-                            app:tint="#5E5E5E"/>
+                            app:tint="?attr/colorOnSurfaceVariant"/>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -269,7 +269,7 @@
                             android:layout_height="24dp"
                             android:src="@android:drawable/ic_menu_my_calendar"
                             android:layout_marginEnd="12dp"
-                            app:tint="#000000"/>
+                            app:tint="?attr/colorOnSurface"/>
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -282,7 +282,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Capacity: 50 spots"
-                                android:textColor="#000000"
+                                android:textColor="?attr/colorOnSurface"
                                 android:textSize="16sp"
                                 android:fontFamily="sans-serif-medium"/>
 
@@ -291,7 +291,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="0 people on waiting list"
-                                android:textColor="#5E5E5E"
+                                android:textColor="?attr/colorOnSurfaceVariant"
                                 android:textSize="14sp"
                                 android:layout_marginTop="4dp"/>
                         </LinearLayout>
@@ -303,7 +303,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="About this event"
-                    android:textColor="#000000"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="20sp"
                     android:fontFamily="sans-serif-medium"
                     android:layout_marginBottom="12dp"/>
@@ -313,7 +313,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Event description will appear here"
-                    android:textColor="#5E5E5E"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="16sp"
                     android:lineSpacingExtra="4dp"
                     android:layout_marginBottom="80dp"/>
@@ -330,7 +330,7 @@
         android:background="@android:drawable/btn_dialog"
         android:src="@android:drawable/ic_menu_close_clear_cancel"
         android:contentDescription="Back"
-        app:tint="#FFFFFF"
+        app:tint="?attr/colorSurface"
         android:elevation="4dp"/>
 
     <!-- Bottom Actions -->
@@ -346,7 +346,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="16dp"
-            android:background="#FFFFFF">
+            android:background="?attr/colorSurface">
 
             <!-- Join Waiting List -->
             <com.google.android.material.button.MaterialButton
@@ -354,14 +354,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:text="Join Waiting List"
-                android:textColor="#FFFFFF"
+                android:textColor="?attr/colorSurface"
                 android:textSize="16sp"
                 android:textAllCaps="false"
                 android:fontFamily="sans-serif-medium"
-                app:backgroundTint="#000000"
+                app:backgroundTint="?attr/colorPrimary"
                 app:cornerRadius="8dp"
                 app:icon="@android:drawable/ic_input_add"
-                app:iconTint="#FFFFFF"/>
+                app:iconTint="?attr/colorSurface"/>
 
             <!-- Leave Waiting List -->
             <com.google.android.material.button.MaterialButton
@@ -402,7 +402,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="🎉 You've been selected! Accept or decline your invitation:"
-                        android:textColor="#000000"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="16sp"
                         android:fontFamily="sans-serif-medium"
                         android:layout_marginBottom="16dp"/>
@@ -420,14 +420,14 @@
                             android:layout_weight="1"
                             android:layout_marginEnd="8dp"
                             android:text="✅ Accept"
-                            android:textColor="#FFFFFF"
+                            android:textColor="?attr/colorSurface"
                             android:textSize="16sp"
                             android:textAllCaps="false"
                             android:fontFamily="sans-serif-medium"
                             app:backgroundTint="#4CAF50"
                             app:cornerRadius="8dp"
                             app:icon="@android:drawable/ic_input_add"
-                            app:iconTint="#FFFFFF"
+                            app:iconTint="?attr/colorSurface"
                             app:iconGravity="start"/>
 
                         <!-- Decline -->
@@ -438,14 +438,14 @@
                             android:layout_weight="1"
                             android:layout_marginStart="8dp"
                             android:text="❌ Decline"
-                            android:textColor="#FFFFFF"
+                            android:textColor="?attr/colorSurface"
                             android:textSize="16sp"
                             android:textAllCaps="false"
                             android:fontFamily="sans-serif-medium"
                             app:backgroundTint="#F44336"
                             app:cornerRadius="8dp"
                             app:icon="@android:drawable/ic_menu_close_clear_cancel"
-                            app:iconTint="#FFFFFF"
+                            app:iconTint="?attr/colorSurface"
                             app:iconGravity="start"/>
                     </LinearLayout>
                 </LinearLayout>

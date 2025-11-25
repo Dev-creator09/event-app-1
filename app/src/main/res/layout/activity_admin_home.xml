@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="?attr/colorSurface">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -30,7 +30,7 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@android:drawable/ic_menu_close_clear_cancel"
                     android:contentDescription="Back"
-                    app:tint="#000000"/>
+                    app:tint="?attr/colorOnSurface"/>
 
                 <TextView
                     android:layout_width="0dp"
@@ -38,7 +38,7 @@
                     android:layout_weight="1"
                     android:layout_marginStart="16dp"
                     android:text="Admin Panel"
-                    android:textColor="#000000"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="24sp"
                     android:fontFamily="sans-serif-medium"/>
 
@@ -64,7 +64,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="🔧 Administrator Mode"
-                        android:textColor="#000000"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="18sp"
                         android:fontFamily="sans-serif-medium"
                         android:layout_marginBottom="8dp"/>
@@ -73,7 +73,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="You have elevated privileges to moderate content and manage the platform."
-                        android:textColor="#5E5E5E"
+                        android:textColor="?attr/colorOnSurfaceVariant"
                         android:textSize="14sp"
                         android:layout_marginBottom="12dp"/>
 
@@ -104,7 +104,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="12dp"
                 android:text="Platform Statistics"
-                android:textColor="#000000"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="20sp"
                 android:fontFamily="sans-serif-medium"/>
 
@@ -132,7 +132,7 @@
                         android:layout_marginEnd="6dp"
                         app:cardCornerRadius="12dp"
                         app:cardElevation="2dp"
-                        app:cardBackgroundColor="#F5F5F5">
+                        app:cardBackgroundColor="?attr/colorSurfaceVariant">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -148,14 +148,14 @@
                                 android:text="0"
                                 android:textSize="32sp"
                                 android:textStyle="bold"
-                                android:textColor="#000000"/>
+                                android:textColor="?attr/colorOnSurface"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Events"
                                 android:textSize="13sp"
-                                android:textColor="#5E5E5E"
+                                android:textColor="?attr/colorOnSurfaceVariant"
                                 android:layout_marginTop="4dp"/>
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
@@ -168,7 +168,7 @@
                         android:layout_marginStart="6dp"
                         app:cardCornerRadius="12dp"
                         app:cardElevation="2dp"
-                        app:cardBackgroundColor="#F5F5F5">
+                        app:cardBackgroundColor="?attr/colorSurfaceVariant">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -184,14 +184,14 @@
                                 android:text="0"
                                 android:textSize="32sp"
                                 android:textStyle="bold"
-                                android:textColor="#000000"/>
+                                android:textColor="?attr/colorOnSurface"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Users"
                                 android:textSize="13sp"
-                                android:textColor="#5E5E5E"
+                                android:textColor="?attr/colorOnSurfaceVariant"
                                 android:layout_marginTop="4dp"/>
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
@@ -211,7 +211,7 @@
                         android:layout_marginEnd="6dp"
                         app:cardCornerRadius="12dp"
                         app:cardElevation="2dp"
-                        app:cardBackgroundColor="#F5F5F5">
+                        app:cardBackgroundColor="?attr/colorSurfaceVariant">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -227,14 +227,14 @@
                                 android:text="0"
                                 android:textSize="32sp"
                                 android:textStyle="bold"
-                                android:textColor="#000000"/>
+                                android:textColor="?attr/colorOnSurface"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Organizers"
                                 android:textSize="13sp"
-                                android:textColor="#5E5E5E"
+                                android:textColor="?attr/colorOnSurfaceVariant"
                                 android:layout_marginTop="4dp"/>
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
@@ -247,7 +247,7 @@
                         android:layout_marginStart="6dp"
                         app:cardCornerRadius="12dp"
                         app:cardElevation="2dp"
-                        app:cardBackgroundColor="#F5F5F5">
+                        app:cardBackgroundColor="?attr/colorSurfaceVariant">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -263,14 +263,14 @@
                                 android:text="0"
                                 android:textSize="32sp"
                                 android:textStyle="bold"
-                                android:textColor="#000000"/>
+                                android:textColor="?attr/colorOnSurface"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Active"
                                 android:textSize="13sp"
-                                android:textColor="#5E5E5E"
+                                android:textColor="?attr/colorOnSurfaceVariant"
                                 android:layout_marginTop="4dp"/>
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
@@ -285,7 +285,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="12dp"
                 android:text="Admin Actions"
-                android:textColor="#000000"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="20sp"
                 android:fontFamily="sans-serif-medium"/>
 
@@ -328,7 +328,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Browse Events"
-                            android:textColor="#000000"
+                            android:textColor="?attr/colorOnSurface"
                             android:textSize="16sp"
                             android:fontFamily="sans-serif-medium"/>
 
@@ -336,7 +336,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="View and manage all events"
-                            android:textColor="#5E5E5E"
+                            android:textColor="?attr/colorOnSurfaceVariant"
                             android:textSize="14sp"
                             android:layout_marginTop="4dp"/>
                     </LinearLayout>
@@ -345,7 +345,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@android:drawable/ic_menu_more"
-                        app:tint="#9E9E9E"/>
+                        app:tint="?attr/colorOnSurfaceVariant"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -388,7 +388,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Browse Users"
-                            android:textColor="#000000"
+                            android:textColor="?attr/colorOnSurface"
                             android:textSize="16sp"
                             android:fontFamily="sans-serif-medium"/>
 
@@ -396,7 +396,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="View and moderate user profiles"
-                            android:textColor="#5E5E5E"
+                            android:textColor="?attr/colorOnSurfaceVariant"
                             android:textSize="14sp"
                             android:layout_marginTop="4dp"/>
                     </LinearLayout>
@@ -405,7 +405,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@android:drawable/ic_menu_more"
-                        app:tint="#9E9E9E"/>
+                        app:tint="?attr/colorOnSurfaceVariant"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -448,7 +448,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Browse Images"
-                            android:textColor="#000000"
+                            android:textColor="?attr/colorOnSurface"
                             android:textSize="16sp"
                             android:fontFamily="sans-serif-medium"/>
 
@@ -456,7 +456,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="View and remove uploaded images"
-                            android:textColor="#5E5E5E"
+                            android:textColor="?attr/colorOnSurfaceVariant"
                             android:textSize="14sp"
                             android:layout_marginTop="4dp"/>
                     </LinearLayout>
@@ -465,7 +465,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@android:drawable/ic_menu_more"
-                        app:tint="#9E9E9E"/>
+                        app:tint="?attr/colorOnSurfaceVariant"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -478,7 +478,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="12dp"
                 android:text="📊 Generate Platform Report"
-                android:textColor="#FFFFFF"
+                android:textColor="?attr/colorSurface"
                 android:textSize="15sp"
                 android:textAllCaps="false"
                 app:backgroundTint="#4CAF50"
@@ -512,7 +512,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="24dp"
                     android:text="View Flagged (0)"
-                    android:textColor="#FFFFFF"
+                    android:textColor="?attr/colorSurface"
                     android:textSize="15sp"
                     android:textAllCaps="false"
                     app:backgroundTint="#D32F2F"

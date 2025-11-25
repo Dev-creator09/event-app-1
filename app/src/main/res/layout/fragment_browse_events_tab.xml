@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="?attr/colorSurface">
 
     <!-- Main Content -->
     <LinearLayout
@@ -38,8 +38,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="Search events..."
-                    android:textColorHint="#9E9E9E"
-                    android:textColor="#000000"
+                    android:textColorHint="?attr/colorOnSurfaceVariant"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:background="@android:color/transparent"
                     android:inputType="text"
@@ -52,7 +52,7 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@android:drawable/ic_menu_close_clear_cancel"
                     android:visibility="gone"
-                    app:tint="#5E5E5E"
+                    app:tint="?attr/colorOnSurfaceVariant"
                     android:contentDescription="Clear search"/>
 
             </LinearLayout>
@@ -173,7 +173,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="0 events"
-                android:textColor="#5E5E5E"
+                android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="14sp"/>
 
             <TextView
@@ -181,7 +181,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sort: Date â–¼"
-                android:textColor="#000000"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="14sp"
                 android:fontFamily="sans-serif-medium"
                 android:padding="8dp"
@@ -230,7 +230,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="No events found"
-                android:textColor="#5E5E5E"
+                android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="16sp"
                 android:textAlignment="center"
                 android:gravity="center"/>
@@ -271,8 +271,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Retry"
-                android:textColor="#FFFFFF"
-                app:backgroundTint="#000000"/>
+                android:textColor="?attr/colorSurface"
+                app:backgroundTint="?attr/colorPrimary"/>
 
         </LinearLayout>
 

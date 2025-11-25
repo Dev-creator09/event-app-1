@@ -22,7 +22,7 @@
         android:src="@android:drawable/ic_menu_close_clear_cancel"
         android:contentDescription="Back"
         android:elevation="4dp"
-        app:tint="#000000"
+        app:tint="?attr/colorOnSurface"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 

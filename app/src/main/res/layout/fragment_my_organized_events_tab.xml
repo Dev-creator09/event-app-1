@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="?attr/colorSurface">
 
     <!-- RecyclerView for organized events -->
     <androidx.recyclerview.widget.RecyclerView
@@ -51,7 +51,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="You haven't organized any events yet"
-            android:textColor="#5E5E5E"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="16sp"
             android:textAlignment="center"
             android:gravity="center"
@@ -62,13 +62,13 @@
             android:layout_width="wrap_content"
             android:layout_height="56dp"
             android:text="Create Your First Event"
-            android:textColor="#FFFFFF"
+            android:textColor="?attr/colorSurface"
             android:textSize="16sp"
             android:textAllCaps="false"
             android:fontFamily="sans-serif-medium"
             android:paddingStart="24dp"
             android:paddingEnd="24dp"
-            app:backgroundTint="#000000"
+            app:backgroundTint="?attr/colorPrimary"
             app:cornerRadius="8dp"/>
 
     </LinearLayout>

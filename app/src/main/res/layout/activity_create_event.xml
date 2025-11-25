@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="?attr/colorSurface">
 
     <!-- Header -->
     <LinearLayout
@@ -23,7 +23,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_menu_close_clear_cancel"
             android:contentDescription="Back"
-            app:tint="#000000"/>
+            app:tint="?attr/colorOnSurface"/>
 
         <TextView
             android:layout_width="0dp"
@@ -31,7 +31,7 @@
             android:layout_weight="1"
             android:layout_marginStart="16dp"
             android:text="Create Event"
-            android:textColor="#000000"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="24sp"
             android:fontFamily="sans-serif-medium"/>
 
@@ -40,10 +40,10 @@
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:text="Preview"
-            android:textColor="#000000"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="14sp"
             android:textAllCaps="false"
-            app:backgroundTint="#F5F5F5"
+            app:backgroundTint="?attr/colorSurfaceVariant"
             app:strokeColor="#000000"
             app:strokeWidth="1dp"
             app:cornerRadius="8dp"
@@ -73,14 +73,14 @@
                 android:layout_marginBottom="16dp"
                 android:hint="Event name"
                 app:boxStrokeColor="#000000"
-                app:hintTextColor="#5E5E5E">
+                app:hintTextColor="?attr/colorOnSurfaceVariant">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editEventName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text"
-                    android:textColor="#000000"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"/>
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -92,7 +92,7 @@
                 android:layout_marginBottom="16dp"
                 android:hint="Description"
                 app:boxStrokeColor="#000000"
-                app:hintTextColor="#5E5E5E">
+                app:hintTextColor="?attr/colorOnSurfaceVariant">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editDescription"
@@ -101,7 +101,7 @@
                     android:inputType="textMultiLine"
                     android:minLines="3"
                     android:gravity="top"
-                    android:textColor="#000000"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"/>
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -113,14 +113,14 @@
                 android:layout_marginBottom="16dp"
                 android:hint="Location (optional)"
                 app:boxStrokeColor="#000000"
-                app:hintTextColor="#5E5E5E">
+                app:hintTextColor="?attr/colorOnSurfaceVariant">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editLocation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text"
-                    android:textColor="#000000"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"/>
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -129,7 +129,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Category"
-                android:textColor="#000000"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="16sp"
                 android:fontFamily="sans-serif-medium"
                 android:layout_marginBottom="8dp"/>
@@ -139,10 +139,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:text="Select Category"
-                android:textColor="#000000"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="16sp"
                 android:textAllCaps="false"
-                app:backgroundTint="#F5F5F5"
+                app:backgroundTint="?attr/colorSurfaceVariant"
                 app:strokeColor="#000000"
                 app:strokeWidth="1dp"
                 app:cornerRadius="8dp"
@@ -158,14 +158,14 @@
                 android:layout_marginBottom="24dp"
                 android:hint="Capacity (optional)"
                 app:boxStrokeColor="#000000"
-                app:hintTextColor="#5E5E5E">
+                app:hintTextColor="?attr/colorOnSurfaceVariant">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editCapacity"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="number"
-                    android:textColor="#000000"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"/>
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -196,7 +196,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Require Geolocation"
-                            android:textColor="#000000"
+                            android:textColor="?attr/colorOnSurface"
                             android:textSize="16sp"
                             android:fontFamily="sans-serif-medium"/>
 
@@ -204,7 +204,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Track where entrants join from"
-                            android:textColor="#5E5E5E"
+                            android:textColor="?attr/colorOnSurfaceVariant"
                             android:textSize="14sp"
                             android:layout_marginTop="4dp"/>
 
@@ -225,7 +225,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Event Poster"
-                android:textColor="#000000"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="16sp"
                 android:fontFamily="sans-serif-medium"
                 android:layout_marginBottom="8dp"/>
@@ -246,7 +246,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:background="#F5F5F5"
+                    android:background="?attr/colorSurfaceVariant"
                     android:contentDescription="Poster preview"/>
 
                 <LinearLayout
@@ -255,7 +255,7 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:background="#F5F5F5">
+                    android:background="?attr/colorSurfaceVariant">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -268,7 +268,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="No poster selected"
-                        android:textColor="#5E5E5E"
+                        android:textColor="?attr/colorOnSurfaceVariant"
                         android:textSize="14sp"/>
 
                 </LinearLayout>
@@ -280,10 +280,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:text="Select Poster"
-                android:textColor="#000000"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="16sp"
                 android:textAllCaps="false"
-                app:backgroundTint="#F5F5F5"
+                app:backgroundTint="?attr/colorSurfaceVariant"
                 app:strokeColor="#000000"
                 app:strokeWidth="1dp"
                 app:cornerRadius="8dp"
@@ -294,7 +294,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Event Date &amp; Time"
-                android:textColor="#000000"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="16sp"
                 android:fontFamily="sans-serif-medium"
                 android:layout_marginBottom="8dp"/>
@@ -304,10 +304,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:text="Select Date &amp; Time"
-                android:textColor="#000000"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="16sp"
                 android:textAllCaps="false"
-                app:backgroundTint="#F5F5F5"
+                app:backgroundTint="?attr/colorSurfaceVariant"
                 app:strokeColor="#000000"
                 app:strokeWidth="1dp"
                 app:cornerRadius="8dp"
@@ -320,7 +320,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Registration Period (Optional)"
-                android:textColor="#000000"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="16sp"
                 android:fontFamily="sans-serif-medium"
                 android:layout_marginBottom="8dp"/>
@@ -330,10 +330,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:text="Registration Start Date"
-                android:textColor="#000000"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="16sp"
                 android:textAllCaps="false"
-                app:backgroundTint="#F5F5F5"
+                app:backgroundTint="?attr/colorSurfaceVariant"
                 app:strokeColor="#000000"
                 app:strokeWidth="1dp"
                 app:cornerRadius="8dp"
@@ -344,10 +344,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:text="Registration End Date"
-                android:textColor="#000000"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="16sp"
                 android:textAllCaps="false"
-                app:backgroundTint="#F5F5F5"
+                app:backgroundTint="?attr/colorSurfaceVariant"
                 app:strokeColor="#000000"
                 app:strokeWidth="1dp"
                 app:cornerRadius="8dp"
@@ -359,11 +359,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:text="Create Event"
-                android:textColor="#FFFFFF"
+                android:textColor="?attr/colorSurface"
                 android:textSize="16sp"
                 android:textAllCaps="false"
                 android:fontFamily="sans-serif-medium"
-                app:backgroundTint="#000000"
+                app:backgroundTint="?attr/colorPrimary"
                 app:cornerRadius="8dp"/>
 
         </LinearLayout>
@@ -395,7 +395,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Creating event..."
-                android:textColor="#FFFFFF"
+                android:textColor="?attr/colorSurface"
                 android:textSize="16sp"
                 android:layout_marginTop="16dp"/>
 

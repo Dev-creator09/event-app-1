@@ -16,9 +16,12 @@ import com.example.event_app.models.Event;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.example.event_app.utils.AccessibilityHelper;
+
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * BrowseEventsActivity - Browse all available events
@@ -45,6 +48,7 @@ public class BrowseEventsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browse_events);
+        new AccessibilityHelper(this).applyAccessibilitySettings(this);
 
         // Initialize Firebase
         db = FirebaseFirestore.getInstance();

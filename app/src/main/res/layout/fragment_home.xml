@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="?attr/colorSurface">
 
     <!-- Fixed Header (Always Visible) -->
     <LinearLayout
@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="20dp"
-        android:background="#FFFFFF"
+        android:background="?attr/colorSurface"
         android:elevation="4dp"
         android:gravity="center_vertical">
 
@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Home"
-            android:textColor="#000000"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="32sp"
             android:fontFamily="sans-serif-medium"/>
 
@@ -35,7 +35,7 @@
             android:src="@android:drawable/ic_menu_search"
             android:contentDescription="Search"
             android:layout_marginEnd="8dp"
-            app:tint="#000000"/>
+            app:tint="?attr/colorOnSurface"/>
 
         <!-- Notification Button with Badge Container -->
         <FrameLayout
@@ -51,7 +51,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@android:drawable/ic_popup_reminder"
                 android:contentDescription="Notifications"
-                app:tint="#000000"/>
+                app:tint="?attr/colorOnSurface"/>
 
             <!-- Badge (Red circle with number) -->
             <TextView
@@ -64,7 +64,7 @@
                 android:background="@drawable/badge_background"
                 android:gravity="center"
                 android:text="9+"
-                android:textColor="#FFFFFF"
+                android:textColor="?attr/colorSurface"
                 android:textSize="10sp"
                 android:fontFamily="sans-serif-medium"
                 android:visibility="gone"/>
@@ -109,7 +109,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="📱 Scan QR Code"
-                        android:textColor="#FFFFFF"
+                        android:textColor="?attr/colorSurface"
                         android:textSize="24sp"
                         android:fontFamily="sans-serif-medium"
                         android:layout_marginBottom="8dp"/>
@@ -148,7 +148,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Happening Soon"
-                        android:textColor="#000000"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="20sp"
                         android:fontFamily="sans-serif-medium"/>
 
@@ -157,7 +157,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="See All →"
-                        android:textColor="#666666"
+                        android:textColor="?attr/colorOnSurfaceVariant"
                         android:textSize="14sp"
                         android:clickable="true"
                         android:focusable="true"
@@ -213,7 +213,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Browse by Category"
-                    android:textColor="#000000"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="20sp"
                     android:fontFamily="sans-serif-medium"
                     android:paddingStart="20dp"
@@ -334,7 +334,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Popular This Week"
-                        android:textColor="#000000"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="20sp"
                         android:fontFamily="sans-serif-medium"/>
 
@@ -343,7 +343,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="See All →"
-                        android:textColor="#666666"
+                        android:textColor="?attr/colorOnSurfaceVariant"
                         android:textSize="14sp"
                         android:clickable="true"
                         android:focusable="true"
@@ -401,7 +401,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Quick Actions"
-                    android:textColor="#000000"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="20sp"
                     android:fontFamily="sans-serif-medium"
                     android:paddingBottom="12dp"/>
@@ -412,7 +412,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:text="📋 My Events"
-                    android:textColor="#000000"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textAllCaps="false"
                     android:fontFamily="sans-serif-medium"
@@ -431,14 +431,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:text="➕ Create Event"
-                    android:textColor="#FFFFFF"
+                    android:textColor="?attr/colorSurface"
                     android:textSize="16sp"
                     android:textAllCaps="false"
                     android:fontFamily="sans-serif-medium"
-                    app:backgroundTint="#000000"
+                    app:backgroundTint="?attr/colorPrimary"
                     app:cornerRadius="12dp"
                     app:icon="@android:drawable/ic_input_add"
-                    app:iconTint="#FFFFFF"
+                    app:iconTint="?attr/colorSurface"
                     app:iconGravity="start"/>
 
             </LinearLayout>

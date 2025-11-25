@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.event_app.R;
 import com.example.event_app.adapters.EntrantListAdapter;
 import com.example.event_app.models.Event;
+import com.example.event_app.utils.AccessibilityHelper;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -52,6 +53,7 @@ public class ViewEntrantsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_entrants);
+        new AccessibilityHelper(this).applyAccessibilitySettings(this);
 
         // Get event ID
         eventId = getIntent().getStringExtra("EVENT_ID");

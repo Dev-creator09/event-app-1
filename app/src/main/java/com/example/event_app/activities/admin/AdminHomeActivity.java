@@ -14,6 +14,7 @@ import com.example.event_app.R;
 import com.example.event_app.activities.entrant.MainActivity;
 import com.example.event_app.models.Event;
 import com.example.event_app.models.User;
+import com.example.event_app.utils.AccessibilityHelper;
 import com.example.event_app.utils.ReportExporter;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
@@ -62,6 +63,7 @@ public class AdminHomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_home);
+        new AccessibilityHelper(this).applyAccessibilitySettings(this);
 
         Log.d(TAG, "AdminHomeActivity created");
 
