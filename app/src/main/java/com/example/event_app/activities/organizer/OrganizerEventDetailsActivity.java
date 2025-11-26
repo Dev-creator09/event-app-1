@@ -43,8 +43,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import com.google.android.material.button.MaterialButton;
 
@@ -458,29 +460,32 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             return;
         }
 
-        // Check capacity
         if (event.isCapacityFull()) {
             Toast.makeText(this, "Event is at full capacity", Toast.LENGTH_SHORT).show();
             btnDrawReplacement.setEnabled(true);
             return;
         }
 
-        // Randomly pick one person from pool
         Collections.shuffle(pool);
         String replacementUserId = pool.get(0);
 
-        // Update Firebase: move from notSelected to selected
+        // ✨ NEW: Create log entry
+        Map<String, Object> logEntry = new HashMap<>();
+        logEntry.put("replacementUserId", replacementUserId);
+        logEntry.put("timestamp", System.currentTimeMillis());
+        logEntry.put("reason", "Manual draw by organizer");
+
         db.collection("events").document(eventId)
                 .update(
                         "selectedList", FieldValue.arrayUnion(replacementUserId),
-                        "notSelectedList", FieldValue.arrayRemove(replacementUserId)
+                        "notSelectedList", FieldValue.arrayRemove(replacementUserId),
+                        "replacementLog", FieldValue.arrayUnion(logEntry)  // ✨ NEW: Log it
                 )
                 .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "✅ Replacement drawn: " + replacementUserId);
+                    Log.d(TAG, "✅ Replacement drawn and logged: " + replacementUserId);
                     Toast.makeText(this, "Replacement selected! Sending notification...",
                             Toast.LENGTH_SHORT).show();
 
-                    // ✨ Send "You've been selected!" notification
                     notificationService.sendNotification(
                             replacementUserId,
                             eventId,
@@ -489,7 +494,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                             "🎉 Good News - You've Been Selected!",
                             "A spot opened up for " + event.getName() +
                                     "! You've been selected from the waiting list. Check your invitations to accept or decline.",
-                            null  // ✅ FIXED - Just pass null
+                            null
                     );
 
                     loadEventDetails();

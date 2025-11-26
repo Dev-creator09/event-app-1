@@ -2,4 +2,6 @@
 <resources>
     <item name="btnUpdatePoster" type="id" />
     <item name="btnManageEntrants" type="id" />
+    <item name="logDisplay" type="id"/>
+    <item name="emptyText" type="id"/>
 </resources>

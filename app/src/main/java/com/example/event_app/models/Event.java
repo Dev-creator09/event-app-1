@@ -11,6 +11,7 @@ import java.util.Map;
  *
  * NEW FIELDS for Replacement Draw:
  * - notSelectedList: Users who lost the lottery (replacement pool)
+ * - replacementLog: Track replacement history
  * - lotteryRun: Has the lottery been run yet?
  * - lotteryDate: When was the lottery run?
  * - archived: Is this event past/archived?
@@ -40,6 +41,7 @@ public class Event {
     private List<String> selectedList;        // Users selected by lottery (waiting for response)
     private List<String> declinedUsers;       // Users who declined invitation
     private List<String> notSelectedList;     // ✨ NEW: Users who lost lottery (replacement pool)
+    private List<Map<String, Object>> replacementLog;  // ✨ NEW: Track replacements
     private String organizerName;
     private Date eventDate;
     private int entrantCount;
@@ -97,6 +99,7 @@ public class Event {
     public List<String> getSelectedList() { return selectedList; }
     public List<String> getDeclinedUsers() { return declinedUsers; }
     public List<String> getNotSelectedList() { return notSelectedList; }  // ✨ NEW
+    public List<Map<String, Object>> getReplacementLog() { return replacementLog; }  // ✨ NEW
     public Date getDate() { return date; }
     public Date getRegistrationStartDate() { return registrationStartDate; }
     public Date getRegistrationEndDate() { return registrationEndDate; }
@@ -128,6 +131,9 @@ public class Event {
     public void setSelectedList(List<String> selectedList) { this.selectedList = selectedList; }
     public void setDeclinedUsers(List<String> declinedUsers) { this.declinedUsers = declinedUsers; }
     public void setNotSelectedList(List<String> notSelectedList) { this.notSelectedList = notSelectedList; }  // ✨ NEW
+    public void setReplacementLog(List<Map<String, Object>> replacementLog) {
+        this.replacementLog = replacementLog;
+    }  // ✨ NEW
     public void setDate(Date date) { this.date = date; }
     public void setRegistrationStartDate(Date registrationStartDate) { this.registrationStartDate = registrationStartDate; }
     public void setRegistrationEndDate(Date registrationEndDate) { this.registrationEndDate = registrationEndDate; }
