@@ -36,7 +36,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class SettingsActivity extends AppCompatActivity {
 
     private static final String TAG = "SettingsActivity";
-    private static final String ADMIN_SECRET_CODE = "CMPUT301Lucky_Spot"; // ✨ Secret code
+    private static final String ADMIN_SECRET_CODE = "1234"; // ✨ Secret code
 
     // UI Elements - Profile
     private TextInputEditText editName, editEmail, editPhone;
@@ -247,7 +247,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     /**
-     * ✨ Hidden admin unlock - tap version 7 times rapidly
+     * ✨ Hidden admin unlock - tap version 3 times rapidly
      */
     private void handleVersionTap() {
         long currentTime = System.currentTimeMillis();
@@ -260,12 +260,12 @@ public class SettingsActivity extends AppCompatActivity {
         lastTapTime = currentTime;
         tapCount++;
 
-        if (tapCount >= 7) {
+        if (tapCount >= 3) {
             tapCount = 0;
             showAdminCodeDialog();
             Toast.makeText(this, "Developer mode activated! 🔓", Toast.LENGTH_SHORT).show();
-        } else if (tapCount >= 4) {
-            Toast.makeText(this, (7 - tapCount) + " more taps to unlock admin", Toast.LENGTH_SHORT).show();
+        } else if (tapCount >= 2) {
+            Toast.makeText(this, (3 - tapCount) + " more taps to unlock admin", Toast.LENGTH_SHORT).show();
         }
     }
 

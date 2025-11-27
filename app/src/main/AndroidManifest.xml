@@ -60,6 +60,8 @@
         <activity android:name=".activities.admin.AdminBrowseUsersActivity" />
         <activity android:name=".activities.admin.AdminBrowseImagesActivity" />
         <activity android:name=".activities.admin.AdminEventDetailsActivity" />
+        <activity android:name=".activities.admin.AdminGeolocationAuditActivity" />
+        <activity android:name=".activities.admin.AdminNotificationLogsActivity" />
 
         <activity
             android:name=".activities.entrant.NotificationsActivity"

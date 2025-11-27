@@ -3,10 +3,12 @@ package com.example.event_app.services;
 import android.util.Log;
 
 import com.example.event_app.models.Notification;
+import com.example.event_app.models.NotificationLog;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,11 +21,13 @@ import java.util.List;
  * - Delete notifications
  * - Get unread count
  * - Respects user notification preferences
+ * - Logs all notifications for admin audit trail
  */
 public class NotificationService {
 
     private static final String TAG = "NotificationService";
     private static final String COLLECTION_NOTIFICATIONS = "notifications";
+    private static final String COLLECTION_NOTIFICATION_LOGS = "notification_logs";
 
     private final FirebaseFirestore db;
 
@@ -56,6 +60,12 @@ public class NotificationService {
                         if (notificationsEnabled != null && !notificationsEnabled) {
                             // User has disabled notifications
                             Log.d(TAG, "Notifications disabled for user: " + userId);
+
+                            // Still log for admin audit (user opted out)
+                            logNotification(null, "System", userId,
+                                    documentSnapshot.getString("name"),
+                                    eventId, eventName, type, title, message, "blocked_user_preference");
+
                             if (callback != null) {
                                 callback.onSuccess(); // Don't treat as failure
                             }
@@ -74,7 +84,7 @@ public class NotificationService {
     }
 
     /**
-     * ✨ NEW: Internal method to create and send notification
+     * ✨ Internal method to create and send notification
      * Original notification creation logic moved here
      */
     private void createAndSendNotification(String userId, String eventId, String eventName,
@@ -93,15 +103,108 @@ public class NotificationService {
                 .set(notification)
                 .addOnSuccessListener(aVoid -> {
                     Log.d(TAG, "Notification sent to user: " + userId);
+
+                    // ✨ NEW: Log notification for admin audit
+                    logNotificationAfterSend(notificationId, userId, eventId, eventName,
+                            type, title, message, "sent");
+
                     if (callback != null) {
                         callback.onSuccess();
                     }
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Failed to send notification", e);
+
+                    // ✨ NEW: Log failed notification attempt
+                    logNotification(null, "System", userId, null,
+                            eventId, eventName, type, title, message, "failed");
+
                     if (callback != null) {
                         callback.onFailure(e.getMessage());
                     }
+                });
+    }
+
+    /**
+     * ✨ NEW: Log notification after successful send (with recipient details)
+     */
+    private void logNotificationAfterSend(String notificationId, String recipientId,
+                                          String eventId, String eventName,
+                                          String type, String title, String message,
+                                          String status) {
+        // Fetch recipient details for complete log
+        db.collection("users").document(recipientId).get()
+                .addOnSuccessListener(userDoc -> {
+                    String recipientName = userDoc.exists() ? userDoc.getString("name") : "Unknown User";
+
+                    logNotification(null, "System", recipientId, recipientName,
+                            eventId, eventName, type, title, message, status, notificationId);
+                })
+                .addOnFailureListener(e -> {
+                    // Log anyway with unknown recipient
+                    logNotification(null, "System", recipientId, "Unknown User",
+                            eventId, eventName, type, title, message, status, notificationId);
+                });
+    }
+
+    /**
+     * ✨ NEW: Log notification for admin audit trail
+     *
+     * @param senderId ID of sender (null for system notifications)
+     * @param senderName Name of sender
+     * @param recipientId ID of recipient user
+     * @param recipientName Name of recipient
+     * @param eventId Related event ID
+     * @param eventName Event name
+     * @param type Notification type
+     * @param title Notification title
+     * @param message Notification message
+     * @param status Status: "sent", "failed", "blocked_user_preference"
+     */
+    private void logNotification(String senderId, String senderName,
+                                 String recipientId, String recipientName,
+                                 String eventId, String eventName,
+                                 String type, String title, String message,
+                                 String status) {
+        logNotification(senderId, senderName, recipientId, recipientName,
+                eventId, eventName, type, title, message, status, null);
+    }
+
+    /**
+     * ✨ NEW: Log notification for admin audit trail (with notification ID)
+     */
+    private void logNotification(String senderId, String senderName,
+                                 String recipientId, String recipientName,
+                                 String eventId, String eventName,
+                                 String type, String title, String message,
+                                 String status, String notificationId) {
+
+        String logId = db.collection(COLLECTION_NOTIFICATION_LOGS).document().getId();
+
+        NotificationLog log = new NotificationLog(
+                logId,
+                notificationId,  // Can be null for failed/blocked notifications
+                senderId != null ? senderId : "system",
+                senderName != null ? senderName : "System",
+                recipientId,
+                recipientName != null ? recipientName : "Unknown",
+                eventId,
+                eventName,
+                type,
+                title,
+                message,
+                new Date(),
+                status
+        );
+
+        db.collection(COLLECTION_NOTIFICATION_LOGS)
+                .document(logId)
+                .set(log)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "✅ Notification logged for audit: " + logId);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "❌ Error logging notification for audit", e);
                 });
     }
 

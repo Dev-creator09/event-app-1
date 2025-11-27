@@ -56,6 +56,7 @@ import java.util.List;
  * - Scan QR code
  * - Browse events
  * - Category filtering
+ * - ✨ Favorites section
  */
 public class HomeFragment extends Fragment {
 
@@ -70,6 +71,12 @@ public class HomeFragment extends Fragment {
     private LinearLayout emptyHappeningSoon, emptyPopular;
     private MaterialButton btnMyEvents, btnCreateEvent;
     private ProgressBar progressBar;
+
+    // ✨ NEW: Favorites
+    private TextView btnSeeAllFavorites;
+    private RecyclerView rvFavorites;
+    private LinearLayout emptyFavorites, sectionFavorites;
+    private HorizontalEventAdapter favoritesAdapter;
 
     // Category chips
     private Chip chipMusic, chipSports, chipArt, chipFood, chipTech, chipWorkshops, chipOther;
@@ -137,6 +144,7 @@ public class HomeFragment extends Fragment {
         // Load events
         loadHappeningSoonEvents();
         loadPopularEvents();
+        loadFavoriteEvents();  // ✨ NEW: Load favorites
 
         // Update notification badge
         updateNotificationBadge();
@@ -157,6 +165,12 @@ public class HomeFragment extends Fragment {
         btnMyEvents = view.findViewById(R.id.btnMyEvents);
         btnCreateEvent = view.findViewById(R.id.btnCreateEvent);
         progressBar = view.findViewById(R.id.progressBar);
+
+        // ✨ NEW: Favorites section
+        btnSeeAllFavorites = view.findViewById(R.id.btnSeeAllFavorites);
+        rvFavorites = view.findViewById(R.id.rvFavorites);
+        emptyFavorites = view.findViewById(R.id.emptyFavorites);
+        sectionFavorites = view.findViewById(R.id.sectionFavorites);
 
         // Category chips
         chipMusic = view.findViewById(R.id.chipMusic);
@@ -180,6 +194,13 @@ public class HomeFragment extends Fragment {
                 LinearLayoutManager.HORIZONTAL, false);
         rvPopular.setLayoutManager(layoutManager2);
         rvPopular.setAdapter(popularAdapter);
+
+        // ✨ NEW: Favorites adapter
+        favoritesAdapter = new HorizontalEventAdapter(requireContext());
+        LinearLayoutManager layoutManager3 = new LinearLayoutManager(requireContext(),
+                LinearLayoutManager.HORIZONTAL, false);
+        rvFavorites.setLayoutManager(layoutManager3);
+        rvFavorites.setAdapter(favoritesAdapter);
     }
 
     private void setupListeners() {
@@ -205,6 +226,16 @@ public class HomeFragment extends Fragment {
             Intent intent = new Intent(requireContext(), BrowseEventsActivity.class);
             startActivity(intent);
         });
+
+        // ✨ NEW: See All Favorites
+        if (btnSeeAllFavorites != null) {
+            btnSeeAllFavorites.setOnClickListener(v -> {
+                // You can create a separate FavoritesActivity or just filter in BrowseEventsActivity
+                Intent intent = new Intent(requireContext(), BrowseEventsActivity.class);
+                intent.putExtra("SHOW_FAVORITES", true);
+                startActivity(intent);
+            });
+        }
 
         btnMyEvents.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), MyEventsActivity.class);
@@ -391,6 +422,98 @@ public class HomeFragment extends Fragment {
                 });
     }
 
+    /**
+     * ✨ NEW: Load user's favorite events
+     */
+    private void loadFavoriteEvents() {
+        if (mAuth.getCurrentUser() == null) {
+            hideFavoritesSection();
+            return;
+        }
+
+        String userId = mAuth.getCurrentUser().getUid();
+        Log.d(TAG, "Loading favorite events for user: " + userId);
+
+        db.collection("users").document(userId)
+                .get()
+                .addOnSuccessListener(document -> {
+                    if (!document.exists()) {
+                        Log.d(TAG, "User document doesn't exist");
+                        hideFavoritesSection();
+                        return;
+                    }
+
+                    List<String> favoriteIds = (List<String>) document.get("favoriteEvents");
+
+                    if (favoriteIds == null || favoriteIds.isEmpty()) {
+                        Log.d(TAG, "No favorite events");
+                        hideFavoritesSection();
+                        return;
+                    }
+
+                    Log.d(TAG, "Found " + favoriteIds.size() + " favorite events");
+
+                    // Firestore whereIn has a limit of 10 items
+                    if (favoriteIds.size() > 10) {
+                        favoriteIds = favoriteIds.subList(0, 10);
+                    }
+
+                    // Load favorite events
+                    db.collection("events")
+                            .whereIn("__name__", favoriteIds)
+                            .get()
+                            .addOnSuccessListener(queryDocumentSnapshots -> {
+                                List<Event> events = new ArrayList<>();
+                                for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                                    Event event = doc.toObject(Event.class);
+                                    event.setId(doc.getId());
+                                    events.add(event);
+                                }
+
+                                Log.d(TAG, "Loaded " + events.size() + " favorite events from Firestore");
+
+                                if (events.isEmpty()) {
+                                    hideFavoritesSection();
+                                } else {
+                                    showFavoritesSection();
+                                    favoritesAdapter.setEvents(events);
+                                }
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.e(TAG, "Error loading favorites", e);
+                                hideFavoritesSection();
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error loading user favorites", e);
+                    hideFavoritesSection();
+                });
+    }
+
+    /**
+     * ✨ NEW: Show favorites section
+     */
+    private void showFavoritesSection() {
+        if (sectionFavorites != null) {
+            sectionFavorites.setVisibility(View.VISIBLE);
+        }
+        if (rvFavorites != null) {
+            rvFavorites.setVisibility(View.VISIBLE);
+        }
+        if (emptyFavorites != null) {
+            emptyFavorites.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * ✨ NEW: Hide favorites section
+     */
+    private void hideFavoritesSection() {
+        if (sectionFavorites != null) {
+            sectionFavorites.setVisibility(View.GONE);
+        }
+    }
+
     private void showEvents(RecyclerView recyclerView, LinearLayout emptyView) {
         recyclerView.setVisibility(View.VISIBLE);
         emptyView.setVisibility(View.GONE);
@@ -406,6 +529,7 @@ public class HomeFragment extends Fragment {
         super.onResume();
         loadHappeningSoonEvents();
         loadPopularEvents();
+        loadFavoriteEvents();  // ✨ NEW: Load favorites
 
         // ✨ Refresh badge when returning to home
         updateNotificationBadge();

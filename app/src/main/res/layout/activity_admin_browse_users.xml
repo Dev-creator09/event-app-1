@@ -8,23 +8,24 @@
     android:fitsSystemWindows="true"
     android:paddingTop="?attr/actionBarSize">
 
-    <!-- Optional Search Bar -->
+    <!-- Search Bar -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/searchContainer"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Search users..."
+        android:hint="Search users by name or email"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="4dp">
+        android:layout_marginBottom="4dp"
+        app:startIconDrawable="@android:drawable/ic_menu_search">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/searchUsers"
+            android:id="@+id/etSearchUsers"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
-            android:visibility="gone" />
+            android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- RecyclerView for Users -->

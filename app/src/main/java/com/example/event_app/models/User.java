@@ -6,6 +6,8 @@ import java.util.List;
 /**
  * User Model - Represents a user in the LuckySpot system
  * Users are identified by device ID (no password needed)
+ *
+ * UPDATED: Added favoriteEvents field for marking favorite events
  */
 public class User {
 
@@ -19,9 +21,13 @@ public class User {
     private long createdAt;
     private long updatedAt;
 
+    // NEW: Favorite events
+    private List<String> favoriteEvents;  // List of event IDs marked as favorite
+
     // Empty constructor for Firebase
     public User() {
         this.roles = new ArrayList<>();
+        this.favoriteEvents = new ArrayList<>();
     }
 
     // Constructor for new users
@@ -31,6 +37,7 @@ public class User {
         this.name = name;
         this.email = email;
         this.roles = new ArrayList<>();
+        this.favoriteEvents = new ArrayList<>();
         this.notificationsEnabled = true;
         this.createdAt = System.currentTimeMillis();
         this.updatedAt = System.currentTimeMillis();
@@ -62,6 +69,26 @@ public class User {
         return hasRole("entrant");
     }
 
+    // NEW: Favorite helper methods
+    public void addFavorite(String eventId) {
+        if (favoriteEvents == null) {
+            favoriteEvents = new ArrayList<>();
+        }
+        if (!favoriteEvents.contains(eventId)) {
+            favoriteEvents.add(eventId);
+        }
+    }
+
+    public void removeFavorite(String eventId) {
+        if (favoriteEvents != null) {
+            favoriteEvents.remove(eventId);
+        }
+    }
+
+    public boolean isFavorite(String eventId) {
+        return favoriteEvents != null && favoriteEvents.contains(eventId);
+    }
+
     // Getters
     public String getUserId() { return userId; }
     public String getDeviceId() { return deviceId; }
@@ -72,6 +99,7 @@ public class User {
     public boolean isNotificationsEnabled() { return notificationsEnabled; }
     public long getCreatedAt() { return createdAt; }
     public long getUpdatedAt() { return updatedAt; }
+    public List<String> getFavoriteEvents() { return favoriteEvents; }  // NEW
 
     // Setters
     public void setUserId(String userId) { this.userId = userId; }
@@ -83,4 +111,5 @@ public class User {
     public void setNotificationsEnabled(boolean notificationsEnabled) { this.notificationsEnabled = notificationsEnabled; }
     public void setCreatedAt(long createdAt) { this.createdAt = createdAt; }
     public void setUpdatedAt(long updatedAt) { this.updatedAt = updatedAt; }
+    public void setFavoriteEvents(List<String> favoriteEvents) { this.favoriteEvents = favoriteEvents; }  // NEW
 }

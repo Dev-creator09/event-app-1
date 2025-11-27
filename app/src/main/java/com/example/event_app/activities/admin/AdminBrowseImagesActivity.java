@@ -25,9 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * AdminBrowseImagesActivity - Admin can view all uploaded images
+ * AdminBrowseImagesActivity - Admin can view and delete uploaded images
  * US 03.06.01: As an administrator, I want to browse images uploaded by users
  * US 03.03.01: As an administrator, I want to remove uploaded images
+ *
+ * UPDATED: Simplified UI - just shows images with delete button
  */
 public class AdminBrowseImagesActivity extends AppCompatActivity {
 
@@ -88,8 +90,11 @@ public class AdminBrowseImagesActivity extends AppCompatActivity {
         imageAdapter.setOnImageClickListener(new ImageAdapter.OnImageClickListener() {
             @Override
             public void onImageClick(ImageData imageData) {
-                // Show image details
-                showImageDetails(imageData);
+                // Optional: Show full-screen image viewer
+                // For now, just show a toast
+                Toast.makeText(AdminBrowseImagesActivity.this,
+                        "Tap delete button to remove image",
+                        Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -114,12 +119,6 @@ public class AdminBrowseImagesActivity extends AppCompatActivity {
 
         // Load from event_posters folder
         loadFromStorageFolder("event_posters", "event_poster");
-
-        // Load from profile_pictures folder (if it exists)
-        loadFromStorageFolder("profile_pictures", "profile_picture");
-
-        // Load from qr_codes folder
-        loadFromStorageFolder("qr_codes", "qr_code");
     }
 
     /**
@@ -142,7 +141,7 @@ public class AdminBrowseImagesActivity extends AppCompatActivity {
                             ImageData imageData = new ImageData(
                                     fileName,           // imageId
                                     imageUrl,           // imageUrl
-                                    "unknown",          // uploadedBy (corrected field name)
+                                    "unknown",          // uploadedBy
                                     imageType           // type
                             );
 
@@ -190,36 +189,13 @@ public class AdminBrowseImagesActivity extends AppCompatActivity {
     }
 
     /**
-     * Show image details dialog
-     */
-    private void showImageDetails(ImageData imageData) {
-        String details = "Type: " + imageData.getType() + "\n" +
-                "File: " + imageData.getImageId() + "\n" +
-                "Uploaded by: " + (imageData.getUploadedBy() != null ? imageData.getUploadedBy() : "Unknown") + "\n" +
-                "Storage path: " + (imageData.getStoragePath() != null ? imageData.getStoragePath() : "N/A");
-
-        new AlertDialog.Builder(this)
-                .setTitle("📷 Image Details")
-                .setMessage(details)
-                .setPositiveButton("OK", null)
-                .setNeutralButton("View Full Image", (dialog, which) -> {
-                    // TODO: Open full-screen image viewer
-                    Toast.makeText(this, "Full image viewer coming soon", Toast.LENGTH_SHORT).show();
-                })
-                .setNegativeButton("Delete", (dialog, which) -> showDeleteConfirmation(imageData))
-                .show();
-    }
-
-    /**
      * Show confirmation dialog before deleting image
+     * US 03.03.01: Remove uploaded images
      */
     private void showDeleteConfirmation(ImageData imageData) {
         new AlertDialog.Builder(this)
-                .setTitle("⚠️ Delete Image")
-                .setMessage("Are you sure you want to delete this image?\n\n" +
-                        "📁 File: " + imageData.getImageId() + "\n" +
-                        "🏷️ Type: " + imageData.getType() + "\n\n" +
-                        "⛔ This action cannot be undone.")
+                .setTitle("Delete Image?")
+                .setMessage("Are you sure you want to delete this image?\n\nThis action cannot be undone.")
                 .setPositiveButton("Delete", (dialog, which) -> {
                     deleteImage(imageData);
                 })
@@ -242,22 +218,23 @@ public class AdminBrowseImagesActivity extends AppCompatActivity {
 
         imageRef.delete()
                 .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "✅ Image deleted from Storage");
+                    Log.d(TAG, "Image deleted from Storage");
 
                     // Also try to remove the reference from Firestore (events/users collection)
                     removeImageReferences(imageData);
 
                     progressBar.setVisibility(View.GONE);
-                    Toast.makeText(this, "✅ Image deleted successfully", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Image deleted successfully", Toast.LENGTH_SHORT).show();
 
                     // Remove from list and update UI
                     imageList.remove(imageData);
                     updateUI();
                 })
                 .addOnFailureListener(e -> {
-                    Log.e(TAG, "❌ Error deleting image from Storage", e);
+                    Log.e(TAG, "Error deleting image from Storage", e);
                     progressBar.setVisibility(View.GONE);
-                    Toast.makeText(this, "❌ Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Failed to delete image: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
                 });
     }
 
@@ -275,11 +252,11 @@ public class AdminBrowseImagesActivity extends AppCompatActivity {
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                         for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                             document.getReference().update("posterUrl", null);
-                            Log.d(TAG, "✅ Removed poster reference from event: " + document.getId());
+                            Log.d(TAG, "Removed poster reference from event: " + document.getId());
                         }
                     })
                     .addOnFailureListener(e -> {
-                        Log.e(TAG, "❌ Error removing event poster reference", e);
+                        Log.e(TAG, "Error removing event poster reference", e);
                     });
         }
 
@@ -291,11 +268,11 @@ public class AdminBrowseImagesActivity extends AppCompatActivity {
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                         for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                             document.getReference().update("profileImageUrl", null);
-                            Log.d(TAG, "✅ Removed profile picture reference from user: " + document.getId());
+                            Log.d(TAG, "Removed profile picture reference from user: " + document.getId());
                         }
                     })
                     .addOnFailureListener(e -> {
-                        Log.e(TAG, "❌ Error removing profile picture reference", e);
+                        Log.e(TAG, "Error removing profile picture reference", e);
                     });
         }
     }

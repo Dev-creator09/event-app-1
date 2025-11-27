@@ -3,22 +3,23 @@ package com.example.event_app.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.event_app.R;
 import com.example.event_app.models.ImageData;
-import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Adapter for displaying images in RecyclerView
- * Used in BrowseImagesActivity for Admin to view all images
+ * ImageAdapter - Display images in a grid with delete button
+ * UPDATED: Shows actual images with delete button overlay (no text labels)
+ * Used in AdminBrowseImagesActivity
  */
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
 
@@ -33,7 +34,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     @Override
     public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_image, parent, false);
+                .inflate(R.layout.item_admin_image, parent, false);
         return new ImageViewHolder(view);
     }
 
@@ -64,58 +65,40 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     }
 
     /**
-     * ViewHolder for image items
+     * ViewHolder for image items - displays actual image with delete button overlay
      */
-    static class ImageViewHolder extends RecyclerView.ViewHolder {
-
-        private ImageView ivImagePreview;
-        private TextView tvImageType;
-        private TextView tvImageUrl;
-        private MaterialButton btnDeleteImage;
+    class ImageViewHolder extends RecyclerView.ViewHolder {
+        ImageView ivImage;
+        ImageButton btnDelete;
 
         public ImageViewHolder(@NonNull View itemView) {
             super(itemView);
-
-            ivImagePreview = itemView.findViewById(R.id.ivImagePreview);
-            tvImageType = itemView.findViewById(R.id.tvImageType);
-            tvImageUrl = itemView.findViewById(R.id.tvImageUrl);
-            btnDeleteImage = itemView.findViewById(R.id.btnDeleteImage);
+            ivImage = itemView.findViewById(R.id.ivImage);
+            btnDelete = itemView.findViewById(R.id.btnDelete);
         }
 
         public void bind(ImageData imageData, OnImageClickListener listener) {
-            // Set image type
-            String type = imageData.getType() != null ? imageData.getType() : "Unknown";
-            tvImageType.setText(formatType(type));
+            // Load actual image with Glide
+            Glide.with(itemView.getContext())
+                    .load(imageData.getImageUrl())
+                    .centerCrop()
+                    .placeholder(R.color.gray_light)
+                    .error(android.R.drawable.ic_menu_gallery)  // Fallback if load fails
+                    .into(ivImage);
 
-            // Set image URL (shortened)
-            tvImageUrl.setText(imageData.getImageUrl());
-
-            // TODO: Load actual image using Glide or Picasso
-            // For now, just show placeholder
-            ivImagePreview.setImageResource(android.R.drawable.ic_menu_gallery);
-
-            // Set delete button click listener
-            btnDeleteImage.setOnClickListener(v -> {
+            // Delete button click
+            btnDelete.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onDeleteClick(imageData);
                 }
             });
 
-            // Set item click listener (to view full image)
-            itemView.setOnClickListener(v -> {
+            // Optional: Click on image to view details
+            ivImage.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onImageClick(imageData);
                 }
             });
-        }
-
-        private String formatType(String type) {
-            if (type.equals("event_poster")) {
-                return "Event Poster";
-            } else if (type.equals("profile_picture")) {
-                return "Profile Picture";
-            }
-            return type;
         }
     }
 
