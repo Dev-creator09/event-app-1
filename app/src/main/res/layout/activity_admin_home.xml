@@ -318,6 +318,15 @@
                     android:textAllCaps="false"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
 
+                <Button
+                    android:id="@+id/btnNotificationTemplates"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Notification Templates"
+                    android:textColor="?attr/colorOnSurface"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_margin="8dp"/>
+
             </LinearLayout>
 
             <!-- Browse Events Card -->

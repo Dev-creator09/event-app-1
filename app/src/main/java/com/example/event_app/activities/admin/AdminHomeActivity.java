@@ -37,13 +37,14 @@ import java.util.List;
  * - Flagged content monitoring
  * - Geolocation audit for privacy compliance
  * - Notification logs for compliance tracking
+ * - Notification templates management
  *
  * US 03.04.01: Browse events
  * US 03.05.01: Browse profiles
  * US 03.06.01: Browse images
  * US 03.13.01: Export platform usage reports
  *
- * UPDATED: Added geolocation audit and notification logs buttons
+ * UPDATED: Added geolocation audit, notification logs, and notification templates buttons
  */
 public class AdminHomeActivity extends AppCompatActivity {
 
@@ -57,7 +58,7 @@ public class AdminHomeActivity extends AppCompatActivity {
 
     // UI Components - Buttons
     private MaterialButton btnGenerateReports, btnFlaggedItems, btnSwitchToUserMode;
-    private Button btnGeolocationAudit, btnNotificationLogs;
+    private Button btnGeolocationAudit, btnNotificationLogs, btnNotificationTemplates;
 
     private View layoutFlaggedSection;
 
@@ -118,6 +119,7 @@ public class AdminHomeActivity extends AppCompatActivity {
         btnSwitchToUserMode = findViewById(R.id.btnSwitchToUserMode);
         btnGeolocationAudit = findViewById(R.id.btnGeolocationAudit);
         btnNotificationLogs = findViewById(R.id.btnNotificationLogs);
+        btnNotificationTemplates = findViewById(R.id.btnNotificationTemplates);
 
         // Flagged section
         layoutFlaggedSection = findViewById(R.id.layoutFlaggedSection);
@@ -166,7 +168,7 @@ public class AdminHomeActivity extends AppCompatActivity {
             Log.e(TAG, "❌ btnGeolocationAudit is null - check XML layout!");
         }
 
-        // ✨ NEW: Notification Logs Button
+        // ✨ Notification Logs Button
         if (btnNotificationLogs != null) {
             btnNotificationLogs.setOnClickListener(v -> {
                 Log.d(TAG, "Notification Logs clicked");
@@ -174,6 +176,16 @@ public class AdminHomeActivity extends AppCompatActivity {
             });
         } else {
             Log.e(TAG, "❌ btnNotificationLogs is null - check XML layout!");
+        }
+
+        // ✨ NEW: Notification Templates Button
+        if (btnNotificationTemplates != null) {
+            btnNotificationTemplates.setOnClickListener(v -> {
+                Log.d(TAG, "Notification Templates clicked");
+                startActivity(new Intent(this, AdminNotificationTemplatesActivity.class));
+            });
+        } else {
+            Log.e(TAG, "❌ btnNotificationTemplates is null - check XML layout!");
         }
 
         // Flagged Items Button
